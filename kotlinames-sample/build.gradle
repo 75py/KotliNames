@@ -1,0 +1,58 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+
+android {
+    compileSdkVersion compile_sdk_version
+    buildToolsVersion build_tool_version
+
+    defaultConfig {
+        applicationId "com.nagopy.android.kotlinames.sample"
+        minSdkVersion 10
+        targetSdkVersion 23
+        versionCode publish_version_code
+        versionName publish_version_name
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    packagingOptions {
+//        exclude 'META-INF/services/javax.annotation.processing.Processor'
+    }
+    lintOptions {
+        abortOnError false
+    }
+}
+
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    compile "io.realm:realm-android:$realm_version"
+    compile project(":kotlinames")
+    provided project(":kotlinames-compiler") // kaptが発火しないので設定しておく
+    kapt project(":kotlinames-compiler")
+
+    compile 'com.android.support:appcompat-v7:23.1.0'
+
+    androidTestCompile 'com.android.support:support-annotations:23.1.0'
+    androidTestCompile 'com.android.support.test:runner:0.4'
+    androidTestCompile 'com.android.support.test:rules:0.4'
+}
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+repositories {
+    mavenCentral()
+}
+
+kapt {
+    generateStubs = true
+}

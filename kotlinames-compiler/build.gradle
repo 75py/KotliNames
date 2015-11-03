@@ -1,0 +1,28 @@
+apply plugin: 'com.novoda.bintray-release'
+apply plugin: 'java'
+
+targetCompatibility = JavaVersion.VERSION_1_7
+sourceCompatibility = JavaVersion.VERSION_1_7
+
+configurations {
+    provided
+    compile.extendsFrom provided
+}
+
+dependencies {
+    compile project(":kotlinames-common")
+    compile 'com.google.auto.service:auto-service:1.0-rc2'
+    provided 'com.squareup:javapoet:1.3.0'
+
+    provided "io.realm:realm-android:$realm_version"
+//    provided files(Jvm.current().getRuntimeJar())
+}
+
+publish {
+    groupId = 'com.nagopy.android'
+    artifactId = 'kotlinames-compiler'
+    publishVersion = publish_version_name
+    desc = 'Type safe Realm!'
+    bintrayUser = bintray_user
+    bintrayKey = bintray_api_key
+}

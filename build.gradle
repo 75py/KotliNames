@@ -1,0 +1,78 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:1.3.0'
+        classpath 'com.novoda:bintray-release:0.3.4'
+    }
+}
+
+allprojects {
+    repositories {
+        jcenter()
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
+
+ext {
+    publish_version_name = versionName()
+    publish_version_code = versionCode()
+    kotlin_version = '1.0.0-beta-1103'
+    realm_version = '0.84.1'
+    compile_sdk_version = 23
+    build_tool_version = "23.0.1"
+}
+
+task bumpMajor << {
+    ant.propertyfile(file: 'version.properties') {
+        entry(key: 'major', type: 'int', operation: '+', value: 1)
+        entry(key: 'minor', type: 'int', operation: '=', value: 0)
+        entry(key: 'patch', type: 'int', operation: '=', value: 0)
+        entry(key: 'id', type: 'int', operation: '+', value: 1)
+    }
+    generateReadMe()
+}
+
+task bumpMinor << {
+    ant.propertyfile(file: 'version.properties') {
+        entry(key: 'minor', type: 'int', operation: '+', value: 1)
+        entry(key: 'patch', type: 'int', operation: '=', value: 0)
+        entry(key: 'id', type: 'int', operation: '+', value: 1)
+    }
+    generateReadMe()
+}
+
+task bumpPatch << {
+    ant.propertyfile(file: 'version.properties') {
+        entry(key: 'patch', type: 'int', operation: '+', value: 1)
+        entry(key: 'id', type: 'int', operation: '+', value: 1)
+    }
+    generateReadMe()
+}
+
+task version << {
+    println "Version name : " + versionName()
+    println "Version code : " + versionCode()
+}
+
+String versionName() {
+    Properties properties = new Properties()
+    properties.load(project.rootProject.file('version.properties').newDataInputStream())
+    return properties['major'] + "." + properties['minor'] + "." + properties['patch']
+}
+
+Integer versionCode() {
+    Properties properties = new Properties()
+    properties.load(project.rootProject.file('version.properties').newDataInputStream())
+    return Integer.valueOf(properties['id'].toString())
+}
+
+void generateReadMe() {
+    def template = file('README.md.template').text
+    def result = template.replaceAll("%%version%%", versionName())
+    file("README.md").withWriter { it << result }
+}
