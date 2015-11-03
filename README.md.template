@@ -1,0 +1,13 @@
+# KotliNames
+
+RealmQuery typesafe API for Kotlin!
+
+## Installation
+
+```groovy
+dependencies {
+    compile 'com.nagopy.android.kotlinames:%%version%%'
+    provided 'com.nagopy.android.kotlinames-compiler:%%version%%'
+    kapt 'com.nagopy.android.kotlinames-compiler:%%version%%'
+}
+```
