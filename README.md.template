@@ -6,8 +6,17 @@ RealmQuery typesafe API for Kotlin!
 
 ```groovy
 dependencies {
-    compile 'com.nagopy.android.kotlinames:%%version%%'
-    provided 'com.nagopy.android.kotlinames-compiler:%%version%%'
-    kapt 'com.nagopy.android.kotlinames-compiler:%%version%%'
+    compile 'io.realm:realm-android:%%realm_version%%'
+
+    compile 'com.nagopy.android:kotlinames:%%version%%'
+    provided 'com.nagopy.android:kotlinames-compiler:%%version%%'
+    kapt 'com.nagopy.android:kotlinames-compiler:%%version%%'
+
 }
 ```
+
+## Version
+
+Library version : %%version%%
+
+Supported Realm version: %%realm_version%%
