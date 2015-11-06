@@ -90,7 +90,7 @@ public class KotliNamesProcessor extends AbstractProcessor {
                 note("type : " + typeName);
 
                 ParameterizedTypeName type = ParameterizedTypeName.get(
-                        ClassName.get(KPropertyName.class),
+                        ClassName.get("com.nagopy.android.kotlinames", "KPropertyName"),
                         TypeVariableName.get(typeName)
                 );
 
@@ -137,6 +137,7 @@ public class KotliNamesProcessor extends AbstractProcessor {
     }
 
     static final Map<String, Class<?>> PRIMITIVE_TYPE_MAP;
+
     static {
         Map<String, Class<?>> primitiveTypeMap = new HashMap<>();
         primitiveTypeMap.put("boolean", Boolean.class);
