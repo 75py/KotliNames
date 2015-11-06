@@ -1,1 +1,1 @@
-include ':kotlinames-sample', ':kotlinames', ':kotlinames-compiler', ':kotlinames-common'
+include ':kotlinames-sample', ':kotlinames', ':kotlinames-compiler'
