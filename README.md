@@ -8,15 +8,15 @@ RealmQuery typesafe API for Kotlin!
 dependencies {
     compile 'io.realm:realm-android:0.84.1'
 
-    compile 'com.nagopy.android:kotlinames:0.1.5'
-    provided 'com.nagopy.android:kotlinames-compiler:0.1.5'
-    kapt 'com.nagopy.android:kotlinames-compiler:0.1.5'
+    compile 'com.nagopy.android:kotlinames:0.1.6'
+    provided 'com.nagopy.android:kotlinames-compiler:0.1.6'
+    kapt 'com.nagopy.android:kotlinames-compiler:0.1.6'
 
 }
 ```
 
 ## Version
 
-Library version : 0.1.5
+Library version : 0.1.6
 
 Supported Realm version: 0.84.1
