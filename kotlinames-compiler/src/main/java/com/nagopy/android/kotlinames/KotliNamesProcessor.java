@@ -30,6 +30,7 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.tools.Diagnostic;
 
+import io.realm.annotations.Ignore;
 import io.realm.annotations.RealmClass;
 import io.realm.internal.RealmObjectProxy;
 
@@ -81,6 +82,11 @@ public class KotliNamesProcessor extends AbstractProcessor {
             for (VariableElement field : fields) {
                 String fieldName = field.getSimpleName().toString();
                 String typeName = field.asType().toString();
+
+                if (field.getAnnotation(Ignore.class) != null) {
+                    note("Ignore " + fieldName);
+                    continue;
+                }
 
                 if (field.asType().getKind().isPrimitive()) {
                     typeName = PRIMITIVE_TYPE_MAP.get(typeName).getName();

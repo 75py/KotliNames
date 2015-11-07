@@ -1,6 +1,7 @@
 package com.nagopy.android.kotlinames
 
 import io.realm.RealmObject
+import io.realm.annotations.Ignore
 import io.realm.annotations.RealmClass
 import java.util.*
 
@@ -29,4 +30,6 @@ open class TestEntity : RealmObject() {
 
     open var date: Date? = Date()
 
+    @Ignore
+    open var ignoreStr: String? = null
 }
