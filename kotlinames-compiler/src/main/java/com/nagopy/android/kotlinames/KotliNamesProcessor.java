@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.processing.AbstractProcessor;
+import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
@@ -39,6 +40,8 @@ public class KotliNamesProcessor extends AbstractProcessor {
 
     static final Set<String> SUPPORTED_TYPES;
 
+    boolean debug;
+
     static {
         Set<String> supportedTypes = new HashSet<>();
         supportedTypes.add(RealmClass.class.getName());
@@ -56,7 +59,15 @@ public class KotliNamesProcessor extends AbstractProcessor {
     }
 
     @Override
+    public synchronized void init(ProcessingEnvironment processingEnv) {
+        super.init(processingEnv);
+
+        debug = "true".equals(processingEnv.getOptions().get("kotlinames.debug"));
+    }
+
+    @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
+        note("debug mode : " + debug);
         note("Start " + this.getClass().getSimpleName());
         note(annotations.toString());
         Set<? extends Element> list = roundEnv.getElementsAnnotatedWith(RealmClass.class);
@@ -157,7 +168,9 @@ public class KotliNamesProcessor extends AbstractProcessor {
     }
 
     private void note(String message) {
-        processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, message);
+        if (debug) {
+            processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, message);
+        }
     }
 
     private void error(String message) {
