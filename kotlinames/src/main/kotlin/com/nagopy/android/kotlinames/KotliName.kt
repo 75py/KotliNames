@@ -1,6 +1,5 @@
 package com.nagopy.android.kotlinames
 
-import android.util.Log
 import io.realm.RealmObject
 import io.realm.RealmQuery
 import io.realm.RealmResults
@@ -109,7 +108,15 @@ fun <E : RealmObject> RealmQuery<E>.notEqualTo(fieldName: KPropertyName<String>,
 fun <E : RealmObject, N : Number> RealmQuery<E>.sum(fieldName: KPropertyName<N>) : Number = sum(fieldName.name())
 
 // RealmResults
-fun <E : RealmObject> RealmResults<E>.sort(fieldName: KPropertyName<*>) = sort(fieldName.name())
-fun <E : RealmObject> RealmResults<E>.sort(fieldName: KPropertyName<*>, sortAscending: Boolean) = sort(fieldName.name(), sortAscending)
-fun <E : RealmObject> RealmResults<E>.sort(name1: KPropertyName<*>, sortAscending1: Boolean, name2: KPropertyName<*>, sortAscending2: Boolean) = sort(name1.name(), sortAscending1, name2.name(), sortAscending2)
-fun <E : RealmObject> RealmResults<E>.sort(name1: KPropertyName<*>, sortAscending1: Boolean, name2: KPropertyName<*>, sortAscending2: Boolean, name3: KPropertyName<*>, sortAscending3: Boolean) = sort(name1.name(), sortAscending1, name2.name(), sortAscending2, name3.name(), sortAscending3)
+fun <E : RealmObject, S> RealmResults<E>.sort(fieldName: S)
+        where S : KPropertyName<*>, S : KPropertySortable
+        = sort(fieldName.name())
+fun <E : RealmObject, S> RealmResults<E>.sort(fieldName: S, sortAscending: Boolean)
+        where S : KPropertyName<*>, S : KPropertySortable
+        = sort(fieldName.name(), sortAscending)
+fun <E : RealmObject, S, S2> RealmResults<E>.sort(name1: S, sortAscending1: Boolean, name2: S2, sortAscending2: Boolean)
+        where S : KPropertyName<*>, S : KPropertySortable, S2 : KPropertyName<*>, S2 : KPropertySortable
+        = sort(name1.name(), sortAscending1, name2.name(), sortAscending2)
+fun <E : RealmObject, S, S2, S3> RealmResults<E>.sort(name1: S, sortAscending1: Boolean, name2: S2, sortAscending2: Boolean, name3: S3, sortAscending3: Boolean)
+        where S : KPropertyName<*>, S : KPropertySortable, S2 : KPropertyName<*>, S2 : KPropertySortable, S3 : KPropertyName<*>, S3 : KPropertySortable
+        = sort(name1.name(), sortAscending1, name2.name(), sortAscending2, name3.name(), sortAscending3)
