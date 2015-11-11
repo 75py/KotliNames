@@ -113,9 +113,3 @@ fun <E : RealmObject> RealmResults<E>.sort(fieldName: KPropertyName<*>) = sort(f
 fun <E : RealmObject> RealmResults<E>.sort(fieldName: KPropertyName<*>, sortAscending: Boolean) = sort(fieldName.name(), sortAscending)
 fun <E : RealmObject> RealmResults<E>.sort(name1: KPropertyName<*>, sortAscending1: Boolean, name2: KPropertyName<*>, sortAscending2: Boolean) = sort(name1.name(), sortAscending1, name2.name(), sortAscending2)
 fun <E : RealmObject> RealmResults<E>.sort(name1: KPropertyName<*>, sortAscending1: Boolean, name2: KPropertyName<*>, sortAscending2: Boolean, name3: KPropertyName<*>, sortAscending3: Boolean) = sort(name1.name(), sortAscending1, name2.name(), sortAscending2, name3.name(), sortAscending3)
-fun <E : RealmObject> RealmResults<E>.sort(vararg fieldNameArray: Pair<KPropertyName<*>, Boolean>) {
-    val fieldNames = fieldNameArray.map { it.first.name() }.toTypedArray()
-    val sortAscending = BooleanArray(fieldNameArray.size)
-    fieldNameArray.forEachIndexed { i, pair -> sortAscending.set(i, pair.second) }
-    sort(fieldNames, sortAscending)
-}
