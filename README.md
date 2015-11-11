@@ -69,13 +69,26 @@ Realm.getInstance(context).use {
 dependencies {
     compile 'io.realm:realm-android:0.84.1'
 
-    compile 'com.nagopy.android:kotlinames:1.0.0'
-    kapt 'com.nagopy.android:kotlinames-compiler:1.0.0'
+    compile 'com.nagopy.android:kotlinames:1.1.0'
+    kapt 'com.nagopy.android:kotlinames-compiler:1.1.0'
 }
+```
+
+## Option
+```groovy
+kapt {
+    generateStubs = true
+    arguments {
+        // [For Development, Optional] If true, outputs debug logs.
+        // default: false
+        arg("kotlinames.debug", "true")
+    }
+}
+
 ```
 
 ## Version
 
-Library version : 1.0.0
+Library version : 1.1.0
 
 Supported Realm version: 0.84.1
