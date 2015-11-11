@@ -74,6 +74,19 @@ dependencies {
 }
 ```
 
+## Option
+```groovy
+kapt {
+    generateStubs = true
+    arguments {
+        // [For Development, Optional] If true, outputs debug logs.
+        // default: false
+        arg("kotlinames.debug", "true")
+    }
+}
+
+```
+
 ## Version
 
 Library version : %%version%%
