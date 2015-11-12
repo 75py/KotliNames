@@ -32,4 +32,6 @@ open class TestEntity : RealmObject() {
 
     @Ignore
     open var ignoreStr: String? = null
+
+    open var byteArray: ByteArray? = null
 }

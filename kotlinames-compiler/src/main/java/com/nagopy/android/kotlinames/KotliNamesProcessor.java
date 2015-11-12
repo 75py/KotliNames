@@ -2,13 +2,9 @@ package com.nagopy.android.kotlinames;
 
 import com.google.auto.service.AutoService;
 import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
-import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeSpec;
-import com.squareup.javapoet.TypeVariableName;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -106,29 +102,11 @@ public class KotliNamesProcessor extends AbstractProcessor {
                 note("fieldName : " + fieldName);
                 note("type : " + typeName);
 
-                ParameterizedTypeName type = ParameterizedTypeName.get(
-                        ClassName.get("com.nagopy.android.kotlinames", "KPropertyName"),
-                        TypeVariableName.get(typeName)
-                );
+                ClassName type = createTypeClassName(field);
 
                 FieldSpec fieldSpec = FieldSpec.builder(type, fieldName, Modifier.PUBLIC)
                         .addModifiers(Modifier.STATIC, Modifier.FINAL)
-                        .initializer(CodeBlock.builder()
-                                .beginControlFlow("new $T()", type)
-                                .add(MethodSpec.methodBuilder("name")
-                                        .addAnnotation(Override.class)
-                                        .addModifiers(Modifier.PUBLIC)
-                                        .returns(String.class)
-                                        .addStatement("return toString()")
-                                        .build().toString())
-                                .add(MethodSpec.methodBuilder("toString")
-                                        .addAnnotation(Override.class)
-                                        .addModifiers(Modifier.PUBLIC)
-                                        .returns(String.class)
-                                        .addStatement("return $S", fieldName)
-                                        .build().toString())
-                                .endControlFlow()
-                                .build())
+                        .initializer("new $T($S)", type, fieldName)
                         .build();
 
                 fieldSpecs.add(fieldSpec);
@@ -176,4 +154,19 @@ public class KotliNamesProcessor extends AbstractProcessor {
     private void error(String message) {
         processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, message);
     }
+
+    private ClassName createTypeClassName(VariableElement field) {
+        String typeName = field.asType().toString();
+        if (field.asType().getKind().isPrimitive()) {
+            typeName = PRIMITIVE_TYPE_MAP.get(typeName).getName();
+        } else if (typeName.equals("byte[]")) {
+            typeName = "ByteArray";
+        }
+        String[] wk = typeName.split("\\.");
+        String simpleName = wk[wk.length - 1];
+
+        String className = "K" + simpleName + "PropertyName";
+        return ClassName.get("com.nagopy.android.kotlinames.property", className);
+    }
+
 }

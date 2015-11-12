@@ -16,29 +16,9 @@ open class Cat : RealmObject(){
 ```java
 // Generated class
 public class CatNames {
-  public static final KPropertyName<java.lang.String> name = new KPropertyName<java.lang.String>() {
-    @java.lang.Override
-    public java.lang.String name() {
-      return toString();
-    }
-    @java.lang.Override
-    public java.lang.String toString() {
-      return "name";
-    }
-  }
-  ;
+  public static final KStringPropertyName name = new KStringPropertyName("name");
 
-  public static final KPropertyName<java.lang.Double> weight = new KPropertyName<java.lang.Double>() {
-    @java.lang.Override
-    public java.lang.String name() {
-      return toString();
-    }
-    @java.lang.Override
-    public java.lang.String toString() {
-      return "weight";
-    }
-  }
-  ;
+  public static final KDoublePropertyName weight = new KDoublePropertyName("weight");
 }
 ```
 
