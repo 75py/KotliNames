@@ -40,15 +40,15 @@ fun <E : RealmObject> RealmQuery<E>.equalTo(fieldName: KPropertyName<String>, va
 fun <E : RealmObject> RealmQuery<E>.equalTo(fieldName: KPropertyName<String>, value: String?, caseSensitive: Boolean) : RealmQuery<E> = equalTo(fieldName.name(), value, caseSensitive)
 
 
-fun <E : RealmObject> RealmQuery<E>.findAllSorted(fieldName: KPropertyName<*>) : RealmResults<E> = findAllSorted(fieldName.name())
-fun <E : RealmObject> RealmQuery<E>.findAllSorted(fieldName: KPropertyName<*>, sortAscending: Boolean) : RealmResults<E> = findAllSorted(fieldName.name(), sortAscending)
-fun <E : RealmObject> RealmQuery<E>.findAllSorted(name1: KPropertyName<*>, sortAscending1: Boolean, name2: KPropertyName<*>, sortAscending2: Boolean) : RealmResults<E> = findAllSorted(name1.name(), sortAscending1, name2.name(), sortAscending2)
-fun <E : RealmObject> RealmQuery<E>.findAllSorted(name1: KPropertyName<*>, sortAscending1: Boolean, name2: KPropertyName<*>, sortAscending2: Boolean, name3: KPropertyName<*>, sortAscending3: Boolean) : RealmResults<E> = findAllSorted(name1.name(), sortAscending1, name2.name(), sortAscending2, name3.name(), sortAscending3)
+fun <E : RealmObject> RealmQuery<E>.findAllSorted(fieldName: KSortablePropertyName<*>) : RealmResults<E> = findAllSorted(fieldName.name())
+fun <E : RealmObject> RealmQuery<E>.findAllSorted(fieldName: KSortablePropertyName<*>, sortAscending: Boolean) : RealmResults<E> = findAllSorted(fieldName.name(), sortAscending)
+fun <E : RealmObject> RealmQuery<E>.findAllSorted(name1: KSortablePropertyName<*>, sortAscending1: Boolean, name2: KSortablePropertyName<*>, sortAscending2: Boolean) : RealmResults<E> = findAllSorted(name1.name(), sortAscending1, name2.name(), sortAscending2)
+fun <E : RealmObject> RealmQuery<E>.findAllSorted(name1: KSortablePropertyName<*>, sortAscending1: Boolean, name2: KSortablePropertyName<*>, sortAscending2: Boolean, name3: KSortablePropertyName<*>, sortAscending3: Boolean) : RealmResults<E> = findAllSorted(name1.name(), sortAscending1, name2.name(), sortAscending2, name3.name(), sortAscending3)
 
-fun <E : RealmObject> RealmQuery<E>.findAllSortedAsync(fieldName: KPropertyName<*>) : RealmResults<E> = findAllSortedAsync(fieldName.name())
-fun <E : RealmObject> RealmQuery<E>.findAllSortedAsync(fieldName: KPropertyName<*>, sortAscending: Boolean) : RealmResults<E> = findAllSortedAsync(fieldName.name(), sortAscending)
-fun <E : RealmObject> RealmQuery<E>.findAllSortedAsync(name1: KPropertyName<*>, sortAscending1: Boolean, name2: KPropertyName<*>, sortAscending2: Boolean) : RealmResults<E> = findAllSortedAsync(name1.name(), sortAscending1, name2.name(), sortAscending2)
-fun <E : RealmObject> RealmQuery<E>.findAllSortedAsync(name1: KPropertyName<*>, sortAscending1: Boolean, name2: KPropertyName<*>, sortAscending2: Boolean, name3: KPropertyName<*>, sortAscending3: Boolean) : RealmResults<E> = findAllSortedAsync(name1.name(), sortAscending1, name2.name(), sortAscending2, name3.name(), sortAscending3)
+fun <E : RealmObject> RealmQuery<E>.findAllSortedAsync(fieldName: KSortablePropertyName<*>) : RealmResults<E> = findAllSortedAsync(fieldName.name())
+fun <E : RealmObject> RealmQuery<E>.findAllSortedAsync(fieldName: KSortablePropertyName<*>, sortAscending: Boolean) : RealmResults<E> = findAllSortedAsync(fieldName.name(), sortAscending)
+fun <E : RealmObject> RealmQuery<E>.findAllSortedAsync(name1: KSortablePropertyName<*>, sortAscending1: Boolean, name2: KSortablePropertyName<*>, sortAscending2: Boolean) : RealmResults<E> = findAllSortedAsync(name1.name(), sortAscending1, name2.name(), sortAscending2)
+fun <E : RealmObject> RealmQuery<E>.findAllSortedAsync(name1: KSortablePropertyName<*>, sortAscending1: Boolean, name2: KSortablePropertyName<*>, sortAscending2: Boolean, name3: KSortablePropertyName<*>, sortAscending3: Boolean) : RealmResults<E> = findAllSortedAsync(name1.name(), sortAscending1, name2.name(), sortAscending2, name3.name(), sortAscending3)
 
 
 fun <E : RealmObject> RealmQuery<E>.greaterThan(fieldName: KPropertyName<Date>, value: Date) : RealmQuery<E> = greaterThan(fieldName.name(), value)
