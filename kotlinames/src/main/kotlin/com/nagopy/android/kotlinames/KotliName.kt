@@ -44,11 +44,23 @@ fun <E : RealmObject> RealmQuery<E>.findAllSorted(fieldName: KSortablePropertyNa
 fun <E : RealmObject> RealmQuery<E>.findAllSorted(fieldName: KSortablePropertyName<*>, sortAscending: Boolean) : RealmResults<E> = findAllSorted(fieldName.name(), sortAscending)
 fun <E : RealmObject> RealmQuery<E>.findAllSorted(name1: KSortablePropertyName<*>, sortAscending1: Boolean, name2: KSortablePropertyName<*>, sortAscending2: Boolean) : RealmResults<E> = findAllSorted(name1.name(), sortAscending1, name2.name(), sortAscending2)
 fun <E : RealmObject> RealmQuery<E>.findAllSorted(name1: KSortablePropertyName<*>, sortAscending1: Boolean, name2: KSortablePropertyName<*>, sortAscending2: Boolean, name3: KSortablePropertyName<*>, sortAscending3: Boolean) : RealmResults<E> = findAllSorted(name1.name(), sortAscending1, name2.name(), sortAscending2, name3.name(), sortAscending3)
+fun <E : RealmObject> RealmQuery<E>.findAllSorted(vararg fieldNameArray: Pair<KSortablePropertyName<*>, Boolean>) : RealmResults<E> {
+    val fieldNames = fieldNameArray.map { it.first.name() }.toTypedArray()
+    val sortAscending = BooleanArray(fieldNameArray.size)
+    fieldNameArray.forEachIndexed { i, pair -> sortAscending.set(i, pair.second) }
+    return findAllSorted(fieldNames, sortAscending)
+}
 
 fun <E : RealmObject> RealmQuery<E>.findAllSortedAsync(fieldName: KSortablePropertyName<*>) : RealmResults<E> = findAllSortedAsync(fieldName.name())
 fun <E : RealmObject> RealmQuery<E>.findAllSortedAsync(fieldName: KSortablePropertyName<*>, sortAscending: Boolean) : RealmResults<E> = findAllSortedAsync(fieldName.name(), sortAscending)
 fun <E : RealmObject> RealmQuery<E>.findAllSortedAsync(name1: KSortablePropertyName<*>, sortAscending1: Boolean, name2: KSortablePropertyName<*>, sortAscending2: Boolean) : RealmResults<E> = findAllSortedAsync(name1.name(), sortAscending1, name2.name(), sortAscending2)
 fun <E : RealmObject> RealmQuery<E>.findAllSortedAsync(name1: KSortablePropertyName<*>, sortAscending1: Boolean, name2: KSortablePropertyName<*>, sortAscending2: Boolean, name3: KSortablePropertyName<*>, sortAscending3: Boolean) : RealmResults<E> = findAllSortedAsync(name1.name(), sortAscending1, name2.name(), sortAscending2, name3.name(), sortAscending3)
+fun <E : RealmObject> RealmQuery<E>.findAllSortedAsync(vararg fieldNameArray: Pair<KSortablePropertyName<*>, Boolean>) : RealmResults<E> {
+    val fieldNames = fieldNameArray.map { it.first.name() }.toTypedArray()
+    val sortAscending = BooleanArray(fieldNameArray.size)
+    fieldNameArray.forEachIndexed { i, pair -> sortAscending.set(i, pair.second) }
+    return findAllSortedAsync(fieldNames, sortAscending)
+}
 
 
 fun <E : RealmObject> RealmQuery<E>.greaterThan(fieldName: KPropertyName<Date>, value: Date) : RealmQuery<E> = greaterThan(fieldName.name(), value)
@@ -112,3 +124,9 @@ fun <E : RealmObject> RealmResults<E>.sort(fieldName: KSortablePropertyName<*>) 
 fun <E : RealmObject> RealmResults<E>.sort(fieldName: KSortablePropertyName<*>, sortAscending: Boolean) = sort(fieldName.name(), sortAscending)
 fun <E : RealmObject> RealmResults<E>.sort(name1: KSortablePropertyName<*>, sortAscending1: Boolean, name2: KSortablePropertyName<*>, sortAscending2: Boolean) = sort(name1.name(), sortAscending1, name2.name(), sortAscending2)
 fun <E : RealmObject> RealmResults<E>.sort(name1: KSortablePropertyName<*>, sortAscending1: Boolean, name2: KSortablePropertyName<*>, sortAscending2: Boolean, name3: KSortablePropertyName<*>, sortAscending3: Boolean) = sort(name1.name(), sortAscending1, name2.name(), sortAscending2, name3.name(), sortAscending3)
+fun <E : RealmObject> RealmResults<E>.sort(vararg fieldNameArray: Pair<KSortablePropertyName<*>, Boolean>) {
+    val fieldNames = fieldNameArray.map { it.first.name() }.toTypedArray()
+    val sortAscending = BooleanArray(fieldNameArray.size)
+    fieldNameArray.forEachIndexed { i, pair -> sortAscending.set(i, pair.second) }
+    sort(fieldNames, sortAscending)
+}

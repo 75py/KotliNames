@@ -54,6 +54,26 @@ dependencies {
 }
 ```
 
+
+## Additional functions
+
+* RealmQuery&lt;E>.findAllSorted(vararg fieldNameArray: Pair&lt;KSortablePropertyName&lt;*>, Boolean>) : RealmResults&lt;E>
+* RealmQuery&lt;E>.findAllSortedAsync(vararg fieldNameArray: Pair&lt;KSortablePropertyName&lt;*>, Boolean>) : RealmResults&lt;E>
+* RealmResults&lt;E>.sort(vararg fieldNameArray: Pair&lt;KSortablePropertyName&lt;*>, Boolean>)
+```kotlin
+// Example
+Realm.getInstance(context).use {
+    it.where(Cat::class.java)
+        .findAllSorted(
+            CatNames.age to RealmResults.SORT_ORDER_ASCENDING
+            , CatNames.weight to RealmResults.SORT_ORDER_ASCENDING
+            , CatNames.name to RealmResults.SORT_ORDER_DESCENDING
+            , CatNames.birthday to RealmResults.SORT_ORDER_DESCENDING
+        )
+}
+```
+
+
 ## Option
 ```groovy
 kapt {
