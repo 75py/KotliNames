@@ -29,6 +29,7 @@ import javax.tools.Diagnostic;
 
 import io.realm.annotations.Ignore;
 import io.realm.annotations.RealmClass;
+import io.realm.annotations.Required;
 import io.realm.internal.RealmObjectProxy;
 
 @AutoService(Processor.class)
@@ -165,8 +166,13 @@ public class KotliNamesProcessor extends AbstractProcessor {
         String[] wk = typeName.split("\\.");
         String simpleName = wk[wk.length - 1];
 
-        String className = "K" + simpleName + "PropertyName";
-        return ClassName.get("com.nagopy.android.kotlinames.property", className);
+        boolean isNullable =
+                field.asType().getKind().isPrimitive()
+                        || field.getAnnotation(Required.class) == null;
+
+        String className = "K" + (isNullable ? "Nullable" : "Required") + simpleName + "PropertyName";
+        String pkgName = "com.nagopy.android.kotlinames.property." + (isNullable ? "nullable" : "required");
+        return ClassName.get(pkgName, className);
     }
 
 }
