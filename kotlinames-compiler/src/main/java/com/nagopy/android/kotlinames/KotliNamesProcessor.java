@@ -4,11 +4,13 @@ import com.google.auto.service.AutoService;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
+import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -76,6 +78,7 @@ public class KotliNamesProcessor extends AbstractProcessor {
                 }
             }
             generateNames(classElement, fields);
+            generateRelationshipNames(classElement, fields);
         }
         note("End " + this.getClass().getSimpleName());
         return true;
@@ -86,7 +89,12 @@ public class KotliNamesProcessor extends AbstractProcessor {
         if (ProcessorUtil.isImplements(cls, RealmObjectProxy.class)) {
             note("Skip proxy class");
         } else {
-            List<FieldSpec> fieldSpecs = new ArrayList<>();
+            String genClassName = cls.getSimpleName().toString() + "Names";
+            String targetFullClassName = cls.asType().toString();
+            String targetSimpleClassName = cls.getSimpleName().toString();
+            String genPackageName = targetFullClassName.substring(0, targetFullClassName.length() - targetSimpleClassName.length() - 1) + ".names";
+
+            List<MethodSpec> staticMethods = new ArrayList<>();
             for (VariableElement field : fields) {
                 String fieldName = field.getSimpleName().toString();
                 String typeName = field.asType().toString();
@@ -105,21 +113,82 @@ public class KotliNamesProcessor extends AbstractProcessor {
 
                 ClassName type = createTypeClassName(field);
 
-                FieldSpec fieldSpec = FieldSpec.builder(type, fieldName, Modifier.PUBLIC)
-                        .addModifiers(Modifier.STATIC, Modifier.FINAL)
-                        .initializer("new $T($S)", type, fieldName)
-                        .build();
-
-                fieldSpecs.add(fieldSpec);
+                staticMethods.add(
+                        MethodSpec.methodBuilder(fieldName)
+                                .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
+                                .returns(type)
+                                .addStatement("return new $T($S)", type, fieldName)
+                                .build()
+                );
             }
 
-            String genClassName = cls.getSimpleName().toString() + "Names";
+            TypeSpec typeSpec = TypeSpec.classBuilder(genClassName)
+                    .addModifiers(Modifier.PUBLIC)
+                    .addMethods(staticMethods)
+                    .build();
+
+            JavaFile prefFile = JavaFile.builder(genPackageName, typeSpec)
+                    .build();
+            try {
+                prefFile.writeTo(processingEnv.getFiler());
+            } catch (IOException e) {
+                error(e.getMessage());
+            }
+        }
+    }
+
+    private void generateRelationshipNames(Element cls, List<VariableElement> fields) {
+        note(cls.getSimpleName().toString());
+        if (ProcessorUtil.isImplements(cls, RealmObjectProxy.class)) {
+            note("Skip proxy class");
+        } else {
+            String genClassName = cls.getSimpleName().toString() + "RelationshipNames";
             String targetFullClassName = cls.asType().toString();
             String targetSimpleClassName = cls.getSimpleName().toString();
             String genPackageName = targetFullClassName.substring(0, targetFullClassName.length() - targetSimpleClassName.length() - 1) + ".names";
+
+            List<FieldSpec> memberFields = new ArrayList<>();
+            List<MethodSpec> memberMethods = new ArrayList<>();
+            for (VariableElement field : fields) {
+                String fieldName = field.getSimpleName().toString();
+                String typeName = field.asType().toString();
+
+                if (field.getAnnotation(Ignore.class) != null) {
+                    note("Ignore " + fieldName);
+                    continue;
+                }
+
+                if (field.asType().getKind().isPrimitive()) {
+                    typeName = PRIMITIVE_TYPE_MAP.get(typeName).getName();
+                }
+
+                note("fieldName : " + fieldName);
+                note("type : " + typeName);
+
+                ClassName type = createTypeClassName(field);
+
+                memberMethods.add(
+                        MethodSpec.methodBuilder(fieldName)
+                                .addModifiers(Modifier.PUBLIC)
+                                .returns(type)
+                                .addStatement("return new $T(prefix + $S)", type, fieldName)
+                                .build()
+                );
+            }
+
+            memberMethods.add(
+                    MethodSpec.constructorBuilder()
+                            .addModifiers(Modifier.PUBLIC)
+                            .addParameter(String.class, "prefix")
+                            .addStatement("this.prefix = prefix + $S", ".")
+                            .build()
+            );
+            memberFields.add(FieldSpec.builder(String.class, "prefix", Modifier.PRIVATE, Modifier.FINAL).build());
+
             TypeSpec typeSpec = TypeSpec.classBuilder(genClassName)
                     .addModifiers(Modifier.PUBLIC)
-                    .addFields(fieldSpecs)
+                    .addFields(memberFields)
+                    .addMethods(memberMethods)
                     .build();
 
             JavaFile prefFile = JavaFile.builder(genPackageName, typeSpec)
@@ -146,6 +215,23 @@ public class KotliNamesProcessor extends AbstractProcessor {
         PRIMITIVE_TYPE_MAP = Collections.unmodifiableMap(primitiveTypeMap);
     }
 
+    static final Set<String> PREPARED_TYPES;
+
+    static {
+        Set<String> types = new HashSet<>();
+        types.add(Boolean.class.getName());
+        types.add(Byte.class.getName());
+        types.add(Short.class.getName());
+        types.add(Integer.class.getName());
+        types.add(Long.class.getName());
+        types.add(Float.class.getName());
+        types.add(Double.class.getName());
+        types.add(Date.class.getName());
+        types.add(String.class.getName());
+        types.add("ByteArray");
+        PREPARED_TYPES = Collections.unmodifiableSet(types);
+    }
+
     private void note(String message) {
         if (debug) {
             processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, message);
@@ -158,21 +244,35 @@ public class KotliNamesProcessor extends AbstractProcessor {
 
     private ClassName createTypeClassName(VariableElement field) {
         String typeName = field.asType().toString();
+        boolean isNullable =
+                field.asType().getKind().isPrimitive()
+                        || field.getAnnotation(Required.class) == null;
+
         if (field.asType().getKind().isPrimitive()) {
             typeName = PRIMITIVE_TYPE_MAP.get(typeName).getName();
         } else if (typeName.equals("byte[]")) {
             typeName = "ByteArray";
         }
-        String[] wk = typeName.split("\\.");
-        String simpleName = wk[wk.length - 1];
 
-        boolean isNullable =
-                field.asType().getKind().isPrimitive()
-                        || field.getAnnotation(Required.class) == null;
-
-        String className = "K" + (isNullable ? "Nullable" : "Required") + simpleName + "PropertyName";
         String pkgName = "com.nagopy.android.kotlinames.property." + (isNullable ? "nullable" : "required");
-        return ClassName.get(pkgName, className);
-    }
+        if (PREPARED_TYPES.contains(typeName)) {
+            String[] wk = typeName.split("\\.");
+            String simpleName = wk[wk.length - 1];
 
+            String className = "K" + (isNullable ? "Nullable" : "Required") + simpleName + "PropertyName";
+            return ClassName.get(pkgName, className);
+        } else if (typeName.startsWith("io.realm.RealmList<")) {
+            String realmObjectName = typeName.split("<|>")[1];
+            note(realmObjectName);
+            String[] wk2 = realmObjectName.split("\\.");
+            String realmObjectSimpleName = wk2[wk2.length - 1];
+            String realmObjectPkg = realmObjectName.substring(0, realmObjectName.length() - realmObjectSimpleName.length() - 1);
+            return ClassName.get(realmObjectPkg + ".names", realmObjectSimpleName + "RelationshipNames");
+        } else {
+            String[] wk2 = typeName.split("\\.");
+            String realmObjectSimpleName = wk2[wk2.length - 1];
+            String realmObjectPkg = typeName.substring(0, typeName.length() - realmObjectSimpleName.length() - 1);
+            return ClassName.get(realmObjectPkg + ".names", realmObjectSimpleName + "RelationshipNames");
+        }
+    }
 }

@@ -77,28 +77,28 @@ class SortTest {
 
         Realm.getInstance(context).use { realm ->
             val result = realm.where(TestEntity::class.java)
-                    .contains(TestEntityNames.string, "string")
+                    .contains(TestEntityNames.string(), "string")
                     .findAll()
             Assert.assertThat(result.size, CoreMatchers.`is`(3))
 
-            result.sort(TestEntityNames.string)
+            result.sort(TestEntityNames.string())
             Assert.assertThat(result[0].string, CoreMatchers.`is`("string1"))
             Assert.assertThat(result[1].string, CoreMatchers.`is`("string2"))
             Assert.assertThat(result[2].string, CoreMatchers.`is`("string3"))
 
-            result.sort(TestEntityNames.string, false)
+            result.sort(TestEntityNames.string(), false)
             Assert.assertThat(result[0].string, CoreMatchers.`is`("string3"))
             Assert.assertThat(result[1].string, CoreMatchers.`is`("string2"))
             Assert.assertThat(result[2].string, CoreMatchers.`is`("string1"))
 
             // by は全て１なので実質stringのみ
-            result.sort(TestEntityNames.by, true, TestEntityNames.string, true)
+            result.sort(TestEntityNames.by(), true, TestEntityNames.string(), true)
             Assert.assertThat(result[0].string, CoreMatchers.`is`("string1"))
             Assert.assertThat(result[1].string, CoreMatchers.`is`("string2"))
             Assert.assertThat(result[2].string, CoreMatchers.`is`("string3"))
 
             // by, i は全て同じ値
-            result.sort(TestEntityNames.by, true, TestEntityNames.i, true, TestEntityNames.sh, true)
+            result.sort(TestEntityNames.by(), true, TestEntityNames.i(), true, TestEntityNames.sh(), true)
             Assert.assertThat(result[0].string, CoreMatchers.`is`("string2"))
             Assert.assertThat(result[1].string, CoreMatchers.`is`("string3"))
             Assert.assertThat(result[2].string, CoreMatchers.`is`("string1"))
@@ -111,28 +111,28 @@ class SortTest {
 
         Realm.getInstance(context).use { realm ->
             val result = realm.where(TestEntity::class.java)
-                    .contains(TestEntityNames.string, "string")
+                    .contains(TestEntityNames.string(), "string")
                     .findAll()
             Assert.assertThat(result.size, CoreMatchers.`is`(3))
 
-            result.sort(TestEntityNames.string to true)
+            result.sort(TestEntityNames.string() to true)
             Assert.assertThat(result[0].string, CoreMatchers.`is`("string1"))
             Assert.assertThat(result[1].string, CoreMatchers.`is`("string2"))
             Assert.assertThat(result[2].string, CoreMatchers.`is`("string3"))
 
-            result.sort(TestEntityNames.string to false)
+            result.sort(TestEntityNames.string() to false)
             Assert.assertThat(result[0].string, CoreMatchers.`is`("string3"))
             Assert.assertThat(result[1].string, CoreMatchers.`is`("string2"))
             Assert.assertThat(result[2].string, CoreMatchers.`is`("string1"))
 
             // by は全て１なので実質stringのみ
-            result.sort(TestEntityNames.by to true, TestEntityNames.string to true)
+            result.sort(TestEntityNames.by() to true, TestEntityNames.string() to true)
             Assert.assertThat(result[0].string, CoreMatchers.`is`("string1"))
             Assert.assertThat(result[1].string, CoreMatchers.`is`("string2"))
             Assert.assertThat(result[2].string, CoreMatchers.`is`("string3"))
 
             // by, i は全て同じ値
-            result.sort(TestEntityNames.by to true, TestEntityNames.i to true, TestEntityNames.sh to true)
+            result.sort(TestEntityNames.by() to true, TestEntityNames.i() to true, TestEntityNames.sh() to true)
             Assert.assertThat(result[0].string, CoreMatchers.`is`("string2"))
             Assert.assertThat(result[1].string, CoreMatchers.`is`("string3"))
             Assert.assertThat(result[2].string, CoreMatchers.`is`("string1"))
@@ -145,26 +145,26 @@ class SortTest {
 
         Realm.getInstance(context).use { realm ->
             val query = realm.where(TestEntity::class.java)
-                    .contains(TestEntityNames.string, "string")
+                    .contains(TestEntityNames.string(), "string")
 
-            var result = query.findAllSorted(TestEntityNames.string)
+            var result = query.findAllSorted(TestEntityNames.string())
             Assert.assertThat(result[0].string, CoreMatchers.`is`("string1"))
             Assert.assertThat(result[1].string, CoreMatchers.`is`("string2"))
             Assert.assertThat(result[2].string, CoreMatchers.`is`("string3"))
 
-            result = query.findAllSorted(TestEntityNames.string, false)
+            result = query.findAllSorted(TestEntityNames.string(), false)
             Assert.assertThat(result[0].string, CoreMatchers.`is`("string3"))
             Assert.assertThat(result[1].string, CoreMatchers.`is`("string2"))
             Assert.assertThat(result[2].string, CoreMatchers.`is`("string1"))
 
             // by は全て１なので実質stringのみ
-            result = query.findAllSorted(TestEntityNames.by, true, TestEntityNames.string, true)
+            result = query.findAllSorted(TestEntityNames.by(), true, TestEntityNames.string(), true)
             Assert.assertThat(result[0].string, CoreMatchers.`is`("string1"))
             Assert.assertThat(result[1].string, CoreMatchers.`is`("string2"))
             Assert.assertThat(result[2].string, CoreMatchers.`is`("string3"))
 
             // by, i は全て同じ値
-            result = query.findAllSorted(TestEntityNames.by, true, TestEntityNames.i, true, TestEntityNames.sh, true)
+            result = query.findAllSorted(TestEntityNames.by(), true, TestEntityNames.i(), true, TestEntityNames.sh(), true)
             Assert.assertThat(result[0].string, CoreMatchers.`is`("string2"))
             Assert.assertThat(result[1].string, CoreMatchers.`is`("string3"))
             Assert.assertThat(result[2].string, CoreMatchers.`is`("string1"))
@@ -177,26 +177,26 @@ class SortTest {
 
         Realm.getInstance(context).use { realm ->
             val query = realm.where(TestEntity::class.java)
-                    .contains(TestEntityNames.string, "string")
+                    .contains(TestEntityNames.string(), "string")
 
-            var result = query.findAllSorted(TestEntityNames.string to true)
+            var result = query.findAllSorted(TestEntityNames.string() to true)
             Assert.assertThat(result[0].string, CoreMatchers.`is`("string1"))
             Assert.assertThat(result[1].string, CoreMatchers.`is`("string2"))
             Assert.assertThat(result[2].string, CoreMatchers.`is`("string3"))
 
-            result = query.findAllSorted(TestEntityNames.string to false)
+            result = query.findAllSorted(TestEntityNames.string() to false)
             Assert.assertThat(result[0].string, CoreMatchers.`is`("string3"))
             Assert.assertThat(result[1].string, CoreMatchers.`is`("string2"))
             Assert.assertThat(result[2].string, CoreMatchers.`is`("string1"))
 
             // by は全て１なので実質stringのみ
-            result = query.findAllSorted(TestEntityNames.by to true, TestEntityNames.string to true)
+            result = query.findAllSorted(TestEntityNames.by() to true, TestEntityNames.string() to true)
             Assert.assertThat(result[0].string, CoreMatchers.`is`("string1"))
             Assert.assertThat(result[1].string, CoreMatchers.`is`("string2"))
             Assert.assertThat(result[2].string, CoreMatchers.`is`("string3"))
 
             // by, i は全て同じ値
-            result = query.findAllSorted(TestEntityNames.by to true, TestEntityNames.i to true, TestEntityNames.sh to true)
+            result = query.findAllSorted(TestEntityNames.by() to true, TestEntityNames.i() to true, TestEntityNames.sh() to true)
             Assert.assertThat(result[0].string, CoreMatchers.`is`("string2"))
             Assert.assertThat(result[1].string, CoreMatchers.`is`("string3"))
             Assert.assertThat(result[2].string, CoreMatchers.`is`("string1"))

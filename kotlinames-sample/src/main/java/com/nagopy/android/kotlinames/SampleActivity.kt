@@ -18,13 +18,13 @@ class SampleActivity : AppCompatActivity() {
         Realm.getInstance(this).use {
             it.where(Cat::class.java)
                     // Type safe! Cat.name can compare to String type only.
-                    .equalTo(CatNames.name, "john")
+                    .equalTo(CatNames.name(), "john")
 
                     // This is a compile error because Cat.name is String type.
                     // .equalTo(CatNames.name, 1.5)
 
                     // Cat.weight is Double value
-                    .greaterThan(CatNames.weight, 5.0)
+                    .greaterThan(CatNames.weight(), 5.0)
 
                     // This is a compile error. Cat.weight cannot compare to String value
                     // .notEqualTo(CatNames.weight, "")

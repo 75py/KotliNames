@@ -1,5 +1,6 @@
 package com.nagopy.android.kotlinames
 
+import io.realm.RealmList
 import io.realm.RealmObject
 import io.realm.annotations.Ignore
 import io.realm.annotations.RealmClass
@@ -7,6 +8,9 @@ import java.util.*
 
 @RealmClass
 open class TestEntity : RealmObject() {
+
+    open var recursive: TestEntity? = null
+    open var recursiveList: RealmList<TestEntity>? = null
 
     open var string: String = "defaultString"
 
