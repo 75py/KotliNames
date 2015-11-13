@@ -8,7 +8,9 @@ RealmQuery typesafe API for Kotlin!
 // Your RealmObject. You don't need to change anything.
 @RealmClass
 open class Cat : RealmObject(){
-    open var name: String? = null
+    @Required
+    open var name: String = ""
+
     open var weight : Double? = null
 }
 ```
@@ -16,9 +18,9 @@ open class Cat : RealmObject(){
 ```java
 // Generated class
 public class CatNames {
-  public static final KStringPropertyName name = new KStringPropertyName("name");
+  public static final KRequiredStringPropertyName name = new KRequiredStringPropertyName("name");
 
-  public static final KDoublePropertyName weight = new KDoublePropertyName("weight");
+  public static final KNullableDoublePropertyName weight = new KNullableDoublePropertyName("weight");
 }
 ```
 
@@ -31,6 +33,9 @@ Realm.getInstance(context).use {
 
         // This is a compile error because Cat.name is String type.
         .equalTo(CatNames.name, 1.5)
+
+        // This is a compile error because Cat.name is @Required field.
+        .equalTo(CatNames.name, null)
 
         // Cat.weight is Double value
         .greaterThan(CatNames.weight, 5.0)
