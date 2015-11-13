@@ -18,9 +18,9 @@ open class Cat : RealmObject(){
 ```java
 // Generated class
 public class CatNames {
-  public static final KRequiredStringPropertyName name = new KStringPropertyName("name");
+  public static final KRequiredStringPropertyName name = new KRequiredStringPropertyName("name");
 
-  public static final KNullableDoublePropertyName weight = new KDoublePropertyName("weight");
+  public static final KNullableDoublePropertyName weight = new KNullableDoublePropertyName("weight");
 }
 ```
 
