@@ -39,7 +39,9 @@ public class KotliNamesProcessor extends AbstractProcessor {
 
     static final Set<String> SUPPORTED_TYPES;
 
-    boolean debug;
+    boolean debug = false;
+    Mode mode = Mode.KOTLIN;
+    static final ClassName CLASS_NAME_STRING = ClassName.get(String.class);
 
     static {
         Set<String> supportedTypes = new HashSet<>();
@@ -62,6 +64,13 @@ public class KotliNamesProcessor extends AbstractProcessor {
         super.init(processingEnv);
 
         debug = "true".equals(processingEnv.getOptions().get("kotlinames.debug"));
+        String lang = processingEnv.getOptions().get("kotlinames.lang");
+        for (Mode mode : Mode.values()) {
+            if (mode.value.equals(lang)) {
+                this.mode = mode;
+                break;
+            }
+        }
     }
 
     @Override
@@ -113,13 +122,23 @@ public class KotliNamesProcessor extends AbstractProcessor {
 
                 ClassName type = createTypeClassName(field);
 
-                staticMethods.add(
-                        MethodSpec.methodBuilder(fieldName)
-                                .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
-                                .returns(type)
-                                .addStatement("return new $T($S)", type, fieldName)
-                                .build()
-                );
+                if (type.equals(CLASS_NAME_STRING)) {
+                    staticMethods.add(
+                            MethodSpec.methodBuilder(fieldName)
+                                    .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
+                                    .returns(String.class)
+                                    .addStatement("return $S", fieldName)
+                                    .build()
+                    );
+                } else {
+                    staticMethods.add(
+                            MethodSpec.methodBuilder(fieldName)
+                                    .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
+                                    .returns(type)
+                                    .addStatement("return new $T($S)", type, fieldName)
+                                    .build()
+                    );
+                }
             }
 
             TypeSpec typeSpec = TypeSpec.classBuilder(genClassName)
@@ -167,13 +186,23 @@ public class KotliNamesProcessor extends AbstractProcessor {
 
                 ClassName type = createTypeClassName(field);
 
-                memberMethods.add(
-                        MethodSpec.methodBuilder(fieldName)
-                                .addModifiers(Modifier.PUBLIC)
-                                .returns(type)
-                                .addStatement("return new $T(prefix + $S)", type, fieldName)
-                                .build()
-                );
+                if (type.equals(CLASS_NAME_STRING)) {
+                    memberMethods.add(
+                            MethodSpec.methodBuilder(fieldName)
+                                    .addModifiers(Modifier.PUBLIC)
+                                    .returns(String.class)
+                                    .addStatement("return prefix + $S", fieldName)
+                                    .build()
+                    );
+                } else {
+                    memberMethods.add(
+                            MethodSpec.methodBuilder(fieldName)
+                                    .addModifiers(Modifier.PUBLIC)
+                                    .returns(type)
+                                    .addStatement("return new $T(prefix + $S)", type, fieldName)
+                                    .build()
+                    );
+                }
             }
 
             memberMethods.add(
@@ -259,8 +288,12 @@ public class KotliNamesProcessor extends AbstractProcessor {
             String[] wk = typeName.split("\\.");
             String simpleName = wk[wk.length - 1];
 
-            String className = "K" + (isNullable ? "Nullable" : "Required") + simpleName + "PropertyName";
-            return ClassName.get(pkgName, className);
+            if (mode == Mode.KOTLIN) {
+                String className = "K" + (isNullable ? "Nullable" : "Required") + simpleName + "PropertyName";
+                return ClassName.get(pkgName, className);
+            } else {
+                return CLASS_NAME_STRING;
+            }
         } else if (typeName.startsWith("io.realm.RealmList<")) {
             String realmObjectName = typeName.split("<|>")[1];
             note(realmObjectName);
@@ -273,6 +306,15 @@ public class KotliNamesProcessor extends AbstractProcessor {
             String realmObjectSimpleName = wk2[wk2.length - 1];
             String realmObjectPkg = typeName.substring(0, typeName.length() - realmObjectSimpleName.length() - 1);
             return ClassName.get(realmObjectPkg + ".names", realmObjectSimpleName + "RelationshipNames");
+        }
+    }
+
+    private enum Mode {
+        KOTLIN("kotlin"), JAVA("java");
+        final String value;
+
+        Mode(String value) {
+            this.value = value;
         }
     }
 }

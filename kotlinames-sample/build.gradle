@@ -57,5 +57,6 @@ kapt {
     generateStubs = true
     arguments {
         arg("kotlinames.debug", "true")
+        arg("kotlinames.lang", "java")
     }
 }
