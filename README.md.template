@@ -12,15 +12,45 @@ open class Cat : RealmObject(){
     open var name: String = ""
 
     open var weight : Double? = null
+
+    open var children: RealmList<Cat>? = null
 }
 ```
 
 ```java
 // Generated class
 public class CatNames {
-  public static final KRequiredStringPropertyName name = new KRequiredStringPropertyName("name");
+  public static KRequiredStringPropertyName name() {
+    return new KRequiredStringPropertyName("name");
+  }
 
-  public static final KNullableDoublePropertyName weight = new KNullableDoublePropertyName("weight");
+  public static KNullableDoublePropertyName weight() {
+    return new KNullableDoublePropertyName("weight");
+  }
+
+  public static CatRelationshipNames children() {
+    return new CatRelationshipNames("children");
+  }
+}
+
+public class CatRelationshipNames {
+  private final String prefix;
+
+  public CatRelationshipNames(String prefix) {
+    this.prefix = prefix + ".";
+  }
+
+  public KRequiredStringPropertyName name() {
+    return new KRequiredStringPropertyName(prefix + "name");
+  }
+
+  public KNullableDoublePropertyName weight() {
+    return new KNullableDoublePropertyName(prefix + "weight");
+  }
+
+  public CatRelationshipNames children() {
+    return new CatRelationshipNames(prefix + "children");
+  }
 }
 ```
 
@@ -42,6 +72,9 @@ Realm.getInstance(context).use {
 
         // This is a compile error. Cat.weight cannot compare to String value
         .notEqualTo(CatNames.weight, "")
+
+        // Relationships is also supported!
+        .equalTo(CatNames.children().name(), "tom")
 
         .findAll()
 }
