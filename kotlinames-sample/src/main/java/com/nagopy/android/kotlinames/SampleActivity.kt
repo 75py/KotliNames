@@ -29,6 +29,9 @@ class SampleActivity : AppCompatActivity() {
                     // This is a compile error. Cat.weight cannot compare to String value
                     // .notEqualTo(CatNames.weight, "")
 
+                    // Relationships is also supported!
+                    .equalTo(CatNames.children().name(), "tom")
+
                     .findAll()
         }
     }

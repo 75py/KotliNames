@@ -1,5 +1,6 @@
 package com.nagopy.android.kotlinames
 
+import io.realm.RealmList
 import io.realm.RealmObject
 import io.realm.annotations.RealmClass
 import io.realm.annotations.Required
@@ -11,5 +12,7 @@ open class Cat : RealmObject() {
     open var name: String? = null
 
     open var weight: Double? = null
+
+    open var children: RealmList<Cat>? = null
 
 }
