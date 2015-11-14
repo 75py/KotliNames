@@ -1,10 +1,10 @@
 # KotliNames
 
-RealmQuery typesafe API for Kotlin!
+Realm type safe API for Kotlin!
 
 ## Example
 
-```java
+```kotlin
 // Your RealmObject. You don't need to change anything.
 @RealmClass
 open class Cat : RealmObject(){
@@ -54,7 +54,7 @@ public class CatRelationshipNames {
 }
 ```
 
-```java
+```kotlin
 // Usage
 Realm.getInstance(context).use {
     it.where(Cat::class.java)
