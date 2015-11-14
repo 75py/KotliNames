@@ -72,7 +72,7 @@ Integer versionCode() {
 }
 
 void generateReadMe() {
-    def template = file('README.md.template').text
+    def template = file('README.template.md').text
     def result = template
             .replaceAll("%%version%%", versionName())
             .replaceAll("%%realm_version%%", realm_version as String)
