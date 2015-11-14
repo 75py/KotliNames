@@ -81,7 +81,7 @@ Realm.getInstance(context).use {
 ```
 
 
-## Installation
+## Installation (Kotlin)
 
 ```groovy
 dependencies {
@@ -89,6 +89,23 @@ dependencies {
 
     compile 'com.nagopy.android:kotlinames:%%version%%'
     kapt 'com.nagopy.android:kotlinames-compiler:%%version%%'
+}
+```
+
+## Installation (Java)
+
+```groovy
+dependencies {
+    compile 'io.realm:realm-android:%%realm_version%%'
+
+    apt 'com.nagopy.android:kotlinames-compiler:%%version%%'
+}
+```
+```groovy
+apt {
+    arguments {
+        arg("kotlinames.lang", "java")
+    }
 }
 ```
 
@@ -120,6 +137,11 @@ kapt {
         // [For Development, Optional] If true, outputs debug logs.
         // default: false
         arg("kotlinames.debug", "true")
+
+        // Programing language("kotlin" or "java")
+        // Java mode generates filed name String constants. It's not type safe but typo safe.
+        // default: kotlin
+        arg("kotlinames.lang", "kotlin")
     }
 }
 
