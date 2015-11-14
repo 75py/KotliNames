@@ -14,7 +14,7 @@ import org.junit.runner.RunWith
 import java.util.*
 
 @RunWith(AndroidJUnit4::class)
-class Tests {
+class RelationshipTest {
 
     lateinit var context: Context
 
@@ -41,8 +41,7 @@ class Tests {
                 test1.f = 5.0f
                 test1.d = 6.0
                 test1.date = Date()
-            }
-            it.executeTransaction {
+
                 val test2 = it.createObject(TestEntity::class.java)
                 test2.string = "string2"
                 test2.nullString = null
@@ -55,70 +54,38 @@ class Tests {
                 test2.f = 6.0f
                 test2.d = 7.0
                 test2.date = Date()
+
+                val test3 = it.createObject(TestEntity::class.java)
+                test3.string = "parent"
+                test3.nullString = "parent"
+                test3.emptyString = "parent"
+                test3.b = null
+                test3.by = null
+                test3.sh = null
+                test3.i = null
+                test3.l = null
+                test3.f = null
+                test3.d = null
+                test3.date = null
+                test3.recursive = test1
+                test3.recursiveList!!.add(test1)
+                test3.recursiveList!!.add(test2)
             }
-        }
-    }
-
-    @Test
-    fun average_byte() {
-        Realm.getInstance(context).use {
-            val avg = it.where(TestEntity::class.java).average(TestEntityNames.by())
-            Assert.assertThat(avg, CoreMatchers.`is`(1.5))
-        }
-    }
-
-    @Test
-    fun average_short() {
-        Realm.getInstance(context).use {
-            val avg = it.where(TestEntity::class.java).average(TestEntityNames.sh())
-            Assert.assertThat(avg, CoreMatchers.`is`(2.5))
-        }
-    }
-
-    @Test
-    fun average_int() {
-        Realm.getInstance(context).use {
-            val avg = it.where(TestEntity::class.java).average(TestEntityNames.i())
-            Assert.assertThat(avg, CoreMatchers.`is`(3.5))
-        }
-    }
-
-    @Test
-    fun average_long() {
-        Realm.getInstance(context).use {
-            val avg = it.where(TestEntity::class.java).average(TestEntityNames.l())
-            Assert.assertThat(avg, CoreMatchers.`is`(4.5))
-        }
-    }
-
-    @Test
-    fun average_float() {
-        Realm.getInstance(context).use {
-            val avg = it.where(TestEntity::class.java).average(TestEntityNames.f())
-            Assert.assertThat(avg, CoreMatchers.`is`(5.5))
-        }
-    }
-
-    @Test
-    fun average_double() {
-        Realm.getInstance(context).use {
-            val avg = it.where(TestEntity::class.java).average(TestEntityNames.d())
-            Assert.assertThat(avg, CoreMatchers.`is`(6.5))
         }
     }
 
     @Test
     fun beginWith() {
         val map = hashMapOf(
-                null to 2L,
-                "str" to 2L,
+                null to 1L,
+                "str" to 1L,
                 "Str" to 0L,
                 "test" to 0L
         )
         Realm.getInstance(context).use { realm ->
             map.forEach {
                 val count = realm.where(TestEntity::class.java)
-                        .beginsWith(TestEntityNames.string(), it.key)
+                        .beginsWith(TestEntityNames.recursiveList().string(), it.key)
                         .count()
                 Assert.assertThat(count, CoreMatchers.`is`(it.value))
             }
@@ -128,75 +95,77 @@ class Tests {
     @Test
     fun beginWith_case() {
         val map = hashMapOf(
-                null to 2L,
-                "str" to 2L,
-                "Str" to 2L,
+                null to 1L,
+                "str" to 1L,
+                "Str" to 1L,
                 "test" to 0L
         )
         Realm.getInstance(context).use { realm ->
             map.forEach {
                 val count = realm.where(TestEntity::class.java)
-                        .beginsWith(TestEntityNames.string(), it.key, false)
+                        .beginsWith(TestEntityNames.recursiveList().string(), it.key, false)
                         .count()
                 Assert.assertThat(count, CoreMatchers.`is`(it.value))
             }
         }
     }
 
-    @Test
+    // Realm 0.84.2
+    // java.lang.IllegalArgumentException: Illegal Argument: between() does not support queries using child object fields.
+    @Test(expected = IllegalArgumentException::class)
     fun between_date() {
         Realm.getInstance(context).use {
             val calendar = Calendar.getInstance()
             calendar.add(Calendar.DATE, 1)
-            val count = it.where(TestEntity::class.java).between(TestEntityNames.date(), calendar.time, calendar.time).count()
+            val count = it.where(TestEntity::class.java).between(TestEntityNames.recursiveList().date(), calendar.time, calendar.time).count()
             Assert.assertThat(count, CoreMatchers.`is`(0L))
         }
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException::class)
     fun between_byte() {
         Realm.getInstance(context).use {
-            val count = it.where(TestEntity::class.java).between(TestEntityNames.by(), 2, 3).count()
+            val count = it.where(TestEntity::class.java).between(TestEntityNames.recursiveList().by(), 2, 3).count()
             Assert.assertThat(count, CoreMatchers.`is`(1L))
         }
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException::class)
     fun between_short() {
         Realm.getInstance(context).use {
-            val count = it.where(TestEntity::class.java).between(TestEntityNames.sh(), 3, 4).count()
+            val count = it.where(TestEntity::class.java).between(TestEntityNames.recursiveList().sh(), 3, 4).count()
             Assert.assertThat(count, CoreMatchers.`is`(1L))
         }
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException::class)
     fun between_int() {
         Realm.getInstance(context).use {
-            val count = it.where(TestEntity::class.java).between(TestEntityNames.i(), 4, 5).count()
+            val count = it.where(TestEntity::class.java).between(TestEntityNames.recursiveList().i(), 4, 5).count()
             Assert.assertThat(count, CoreMatchers.`is`(1L))
         }
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException::class)
     fun between_long() {
         Realm.getInstance(context).use {
-            val count = it.where(TestEntity::class.java).between(TestEntityNames.l(), 5, 6).count()
+            val count = it.where(TestEntity::class.java).between(TestEntityNames.recursiveList().l(), 5, 6).count()
             Assert.assertThat(count, CoreMatchers.`is`(1L))
         }
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException::class)
     fun between_float() {
         Realm.getInstance(context).use {
-            val count = it.where(TestEntity::class.java).between(TestEntityNames.f(), 6f, 7f).count()
+            val count = it.where(TestEntity::class.java).between(TestEntityNames.recursiveList().f(), 6f, 7f).count()
             Assert.assertThat(count, CoreMatchers.`is`(1L))
         }
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException::class)
     fun between_double() {
         Realm.getInstance(context).use {
-            val count = it.where(TestEntity::class.java).between(TestEntityNames.d(), 7.0, 8.0).count()
+            val count = it.where(TestEntity::class.java).between(TestEntityNames.recursiveList().d(), 7.0, 8.0).count()
             Assert.assertThat(count, CoreMatchers.`is`(1L))
         }
     }
@@ -204,15 +173,15 @@ class Tests {
     @Test
     fun contains() {
         val map = hashMapOf(
-                null to 2L,
-                "str" to 2L,
+                null to 1L,
+                "str" to 1L,
                 "Str" to 0L,
                 "test" to 0L
         )
         Realm.getInstance(context).use { realm ->
             map.forEach {
                 val count = realm.where(TestEntity::class.java)
-                        .contains(TestEntityNames.string(), it.key)
+                        .contains(TestEntityNames.recursiveList().string(), it.key)
                         .count()
                 Assert.assertThat(count, CoreMatchers.`is`(it.value))
             }
@@ -222,15 +191,15 @@ class Tests {
     @Test
     fun contains_case() {
         val map = hashMapOf(
-                null to 2L,
-                "str" to 2L,
-                "Str" to 2L,
+                null to 1L,
+                "str" to 1L,
+                "Str" to 1L,
                 "test" to 0L
         )
         Realm.getInstance(context).use { realm ->
             map.forEach {
                 val count = realm.where(TestEntity::class.java)
-                        .contains(TestEntityNames.string(), it.key, false)
+                        .contains(TestEntityNames.recursiveList().string(), it.key, false)
                         .count()
                 Assert.assertThat(count, CoreMatchers.`is`(it.value))
             }
@@ -240,7 +209,7 @@ class Tests {
     @Test
     fun endsWith() {
         val map = hashMapOf(
-                null to 2L,
+                null to 1L,
                 "string" to 1L,
                 "ING" to 0L,
                 "test" to 0L
@@ -248,7 +217,7 @@ class Tests {
         Realm.getInstance(context).use { realm ->
             map.forEach {
                 val count = realm.where(TestEntity::class.java)
-                        .endsWith(TestEntityNames.string(), it.key)
+                        .endsWith(TestEntityNames.recursiveList().string(), it.key)
                         .count()
                 Assert.assertThat(count, CoreMatchers.`is`(it.value))
             }
@@ -258,7 +227,7 @@ class Tests {
     @Test
     fun endsWith_case() {
         val map = hashMapOf(
-                null to 2L,
+                null to 1L,
                 "string" to 1L,
                 "ING" to 1L,
                 "test" to 0L
@@ -266,7 +235,7 @@ class Tests {
         Realm.getInstance(context).use { realm ->
             map.forEach {
                 val count = realm.where(TestEntity::class.java)
-                        .endsWith(TestEntityNames.string(), it.key, false)
+                        .endsWith(TestEntityNames.recursiveList().string(), it.key, false)
                         .count()
                 Assert.assertThat(count, CoreMatchers.`is`(it.value))
             }
@@ -284,7 +253,7 @@ class Tests {
         Realm.getInstance(context).use { realm ->
             map.forEach {
                 val count = realm.where(TestEntity::class.java)
-                        .equalTo(TestEntityNames.string(), it.key)
+                        .equalTo(TestEntityNames.recursiveList().string(), it.key)
                         .count()
                 Assert.assertThat(count, CoreMatchers.`is`(it.value))
             }
@@ -302,7 +271,7 @@ class Tests {
         Realm.getInstance(context).use { realm ->
             map.forEach {
                 val count = realm.where(TestEntity::class.java)
-                        .equalTo(TestEntityNames.string(), it.key, false)
+                        .equalTo(TestEntityNames.recursiveList().string(), it.key, false)
                         .count()
                 Assert.assertThat(count, CoreMatchers.`is`(it.value))
             }
@@ -318,7 +287,7 @@ class Tests {
         Realm.getInstance(context).use { realm ->
             map.forEach {
                 val count = realm.where(TestEntity::class.java)
-                        .equalTo(TestEntityNames.b(), it.key)
+                        .equalTo(TestEntityNames.recursiveList().b(), it.key)
                         .count()
                 Assert.assertThat(count, CoreMatchers.`is`(it.value))
             }
@@ -334,7 +303,7 @@ class Tests {
         Realm.getInstance(context).use { realm ->
             map.forEach {
                 val count = realm.where(TestEntity::class.java)
-                        .equalTo(TestEntityNames.by(), it.key)
+                        .equalTo(TestEntityNames.recursiveList().by(), it.key)
                         .count()
                 Assert.assertThat(count, CoreMatchers.`is`(it.value))
             }
@@ -350,7 +319,7 @@ class Tests {
         Realm.getInstance(context).use { realm ->
             map.forEach {
                 val count = realm.where(TestEntity::class.java)
-                        .equalTo(TestEntityNames.sh(), it.key)
+                        .equalTo(TestEntityNames.recursiveList().sh(), it.key)
                         .count()
                 Assert.assertThat(count, CoreMatchers.`is`(it.value))
             }
@@ -366,7 +335,7 @@ class Tests {
         Realm.getInstance(context).use { realm ->
             map.forEach {
                 val count = realm.where(TestEntity::class.java)
-                        .equalTo(TestEntityNames.i(), it.key)
+                        .equalTo(TestEntityNames.recursiveList().i(), it.key)
                         .count()
                 Assert.assertThat(count, CoreMatchers.`is`(it.value))
             }
@@ -382,7 +351,7 @@ class Tests {
         Realm.getInstance(context).use { realm ->
             map.forEach {
                 val count = realm.where(TestEntity::class.java)
-                        .equalTo(TestEntityNames.l(), it.key)
+                        .equalTo(TestEntityNames.recursiveList().l(), it.key)
                         .count()
                 Assert.assertThat(count, CoreMatchers.`is`(it.value))
             }
@@ -398,7 +367,7 @@ class Tests {
         Realm.getInstance(context).use { realm ->
             map.forEach {
                 val count = realm.where(TestEntity::class.java)
-                        .equalTo(TestEntityNames.f(), it.key)
+                        .equalTo(TestEntityNames.recursiveList().f(), it.key)
                         .count()
                 Assert.assertThat(count, CoreMatchers.`is`(it.value))
             }
@@ -414,7 +383,7 @@ class Tests {
         Realm.getInstance(context).use { realm ->
             map.forEach {
                 val count = realm.where(TestEntity::class.java)
-                        .equalTo(TestEntityNames.d(), it.key)
+                        .equalTo(TestEntityNames.recursiveList().d(), it.key)
                         .count()
                 Assert.assertThat(count, CoreMatchers.`is`(it.value))
             }
@@ -425,12 +394,12 @@ class Tests {
     fun equalTo_date() {
         val map = hashMapOf(
                 null to 0L,
-                Date() to 2L
+                Date() to 1L
         )
         Realm.getInstance(context).use { realm ->
             map.forEach {
                 val count = realm.where(TestEntity::class.java)
-                        .equalTo(TestEntityNames.date(), it.key)
+                        .equalTo(TestEntityNames.recursiveList().date(), it.key)
                         .count()
                 Assert.assertThat(count, CoreMatchers.`is`(it.value))
             }
@@ -442,12 +411,12 @@ class Tests {
         val cal = Calendar.getInstance()
         cal.add(Calendar.DATE, -1)
         val map = hashMapOf(
-                cal.time to 2L
+                cal.time to 1L
         )
         Realm.getInstance(context).use { realm ->
             map.forEach {
                 val count = realm.where(TestEntity::class.java)
-                        .greaterThan(TestEntityNames.date(), it.key)
+                        .greaterThan(TestEntityNames.recursiveList().date(), it.key)
                         .count()
                 Assert.assertThat(count, CoreMatchers.`is`(it.value))
             }
@@ -457,13 +426,13 @@ class Tests {
     @Test
     fun greaterThan_byte() {
         val map = hashMapOf(
-                0.toByte() to 2L,
+                0.toByte() to 1L,
                 2.toByte() to 0L
         )
         Realm.getInstance(context).use { realm ->
             map.forEach {
                 val count = realm.where(TestEntity::class.java)
-                        .greaterThan(TestEntityNames.by(), it.key)
+                        .greaterThan(TestEntityNames.recursiveList().by(), it.key)
                         .count()
                 Assert.assertThat(count, CoreMatchers.`is`(it.value))
             }
@@ -473,13 +442,13 @@ class Tests {
     @Test
     fun greaterThan_short() {
         val map = hashMapOf(
-                0.toShort() to 2L,
+                0.toShort() to 1L,
                 3.toShort() to 0L
         )
         Realm.getInstance(context).use { realm ->
             map.forEach {
                 val count = realm.where(TestEntity::class.java)
-                        .greaterThan(TestEntityNames.sh(), it.key)
+                        .greaterThan(TestEntityNames.recursiveList().sh(), it.key)
                         .count()
                 Assert.assertThat(count, CoreMatchers.`is`(it.value))
             }
@@ -490,13 +459,13 @@ class Tests {
     @Test
     fun greaterThan_int() {
         val map = hashMapOf(
-                0 to 2L,
+                0 to 1L,
                 4 to 0L
         )
         Realm.getInstance(context).use { realm ->
             map.forEach {
                 val count = realm.where(TestEntity::class.java)
-                        .greaterThan(TestEntityNames.i(), it.key)
+                        .greaterThan(TestEntityNames.recursiveList().i(), it.key)
                         .count()
                 Assert.assertThat(count, CoreMatchers.`is`(it.value))
             }
@@ -506,13 +475,13 @@ class Tests {
     @Test
     fun greaterThan_long() {
         val map = hashMapOf(
-                0L to 2L,
+                0L to 1L,
                 5L to 0L
         )
         Realm.getInstance(context).use { realm ->
             map.forEach {
                 val count = realm.where(TestEntity::class.java)
-                        .greaterThan(TestEntityNames.l(), it.key)
+                        .greaterThan(TestEntityNames.recursiveList().l(), it.key)
                         .count()
                 Assert.assertThat(count, CoreMatchers.`is`(it.value))
             }
@@ -522,13 +491,13 @@ class Tests {
     @Test
     fun greaterThan_float() {
         val map = hashMapOf(
-                0f to 2L,
+                0f to 1L,
                 6f to 0L
         )
         Realm.getInstance(context).use { realm ->
             map.forEach {
                 val count = realm.where(TestEntity::class.java)
-                        .greaterThan(TestEntityNames.f(), it.key)
+                        .greaterThan(TestEntityNames.recursiveList().f(), it.key)
                         .count()
                 Assert.assertThat(count, CoreMatchers.`is`(it.value))
             }
@@ -538,13 +507,13 @@ class Tests {
     @Test
     fun greaterThan_double() {
         val map = hashMapOf(
-                0.0 to 2L,
+                0.0 to 1L,
                 7.0 to 0L
         )
         Realm.getInstance(context).use { realm ->
             map.forEach {
                 val count = realm.where(TestEntity::class.java)
-                        .greaterThan(TestEntityNames.d(), it.key)
+                        .greaterThan(TestEntityNames.recursiveList().d(), it.key)
                         .count()
                 Assert.assertThat(count, CoreMatchers.`is`(it.value))
             }
@@ -557,12 +526,12 @@ class Tests {
         val cal = Calendar.getInstance()
         cal.add(Calendar.DATE, -1)
         val map = hashMapOf(
-                cal.time to 2L
+                cal.time to 1L
         )
         Realm.getInstance(context).use { realm ->
             map.forEach {
                 val count = realm.where(TestEntity::class.java)
-                        .greaterThanOrEqualTo(TestEntityNames.date(), it.key)
+                        .greaterThanOrEqualTo(TestEntityNames.recursiveList().date(), it.key)
                         .count()
                 Assert.assertThat(count, CoreMatchers.`is`(it.value))
             }
@@ -572,13 +541,13 @@ class Tests {
     @Test
     fun greaterThanOrEqualTo_byte() {
         val map = hashMapOf(
-                0.toByte() to 2L,
+                0.toByte() to 1L,
                 2.toByte() to 1L
         )
         Realm.getInstance(context).use { realm ->
             map.forEach {
                 val count = realm.where(TestEntity::class.java)
-                        .greaterThanOrEqualTo(TestEntityNames.by(), it.key)
+                        .greaterThanOrEqualTo(TestEntityNames.recursiveList().by(), it.key)
                         .count()
                 Assert.assertThat(count, CoreMatchers.`is`(it.value))
             }
@@ -588,13 +557,13 @@ class Tests {
     @Test
     fun greaterThanOrEqualTo_short() {
         val map = hashMapOf(
-                0.toShort() to 2L,
+                0.toShort() to 1L,
                 3.toShort() to 1L
         )
         Realm.getInstance(context).use { realm ->
             map.forEach {
                 val count = realm.where(TestEntity::class.java)
-                        .greaterThanOrEqualTo(TestEntityNames.sh(), it.key)
+                        .greaterThanOrEqualTo(TestEntityNames.recursiveList().sh(), it.key)
                         .count()
                 Assert.assertThat(count, CoreMatchers.`is`(it.value))
             }
@@ -605,13 +574,13 @@ class Tests {
     @Test
     fun greaterThanOrEqualTo_int() {
         val map = hashMapOf(
-                0 to 2L,
+                0 to 1L,
                 4 to 1L
         )
         Realm.getInstance(context).use { realm ->
             map.forEach {
                 val count = realm.where(TestEntity::class.java)
-                        .greaterThanOrEqualTo(TestEntityNames.i(), it.key)
+                        .greaterThanOrEqualTo(TestEntityNames.recursiveList().i(), it.key)
                         .count()
                 Assert.assertThat(count, CoreMatchers.`is`(it.value))
             }
@@ -621,13 +590,13 @@ class Tests {
     @Test
     fun greaterThanOrEqualTo_long() {
         val map = hashMapOf(
-                0L to 2L,
+                0L to 1L,
                 5L to 1L
         )
         Realm.getInstance(context).use { realm ->
             map.forEach {
                 val count = realm.where(TestEntity::class.java)
-                        .greaterThanOrEqualTo(TestEntityNames.l(), it.key)
+                        .greaterThanOrEqualTo(TestEntityNames.recursiveList().l(), it.key)
                         .count()
                 Assert.assertThat(count, CoreMatchers.`is`(it.value))
             }
@@ -637,13 +606,13 @@ class Tests {
     @Test
     fun greaterThanOrEqualTo_float() {
         val map = hashMapOf(
-                0f to 2L,
+                0f to 1L,
                 6f to 1L
         )
         Realm.getInstance(context).use { realm ->
             map.forEach {
                 val count = realm.where(TestEntity::class.java)
-                        .greaterThanOrEqualTo(TestEntityNames.f(), it.key)
+                        .greaterThanOrEqualTo(TestEntityNames.recursiveList().f(), it.key)
                         .count()
                 Assert.assertThat(count, CoreMatchers.`is`(it.value))
             }
@@ -653,13 +622,13 @@ class Tests {
     @Test
     fun greaterThanOrEqualTo_double() {
         val map = hashMapOf(
-                0.0 to 2L,
+                0.0 to 1L,
                 7.0 to 1L
         )
         Realm.getInstance(context).use { realm ->
             map.forEach {
                 val count = realm.where(TestEntity::class.java)
-                        .greaterThanOrEqualTo(TestEntityNames.d(), it.key)
+                        .greaterThanOrEqualTo(TestEntityNames.recursiveList().d(), it.key)
                         .count()
                 Assert.assertThat(count, CoreMatchers.`is`(it.value))
             }
@@ -670,9 +639,9 @@ class Tests {
     fun isEmpty() {
         Realm.getInstance(context).use { realm ->
             val count = realm.where(TestEntity::class.java)
-                    .isEmpty(TestEntityNames.emptyString())
+                    .isEmpty(TestEntityNames.recursiveList().emptyString())
                     .count()
-            Assert.assertThat(count, CoreMatchers.`is`(2L))
+            Assert.assertThat(count, CoreMatchers.`is`(1L))
         }
     }
 
@@ -680,9 +649,9 @@ class Tests {
     fun isNull() {
         Realm.getInstance(context).use { realm ->
             val count = realm.where(TestEntity::class.java)
-                    .isNull(TestEntityNames.nullString())
+                    .isNull(TestEntityNames.recursiveList().nullString())
                     .count()
-            Assert.assertThat(count, CoreMatchers.`is`(2L))
+            Assert.assertThat(count, CoreMatchers.`is`(1L))
         }
     }
 
@@ -690,7 +659,7 @@ class Tests {
     fun isNotNull() {
         Realm.getInstance(context).use { realm ->
             val count = realm.where(TestEntity::class.java)
-                    .isNotNull(TestEntityNames.nullString())
+                    .isNotNull(TestEntityNames.recursiveList().nullString())
                     .count()
             Assert.assertThat(count, CoreMatchers.`is`(0L))
         }
@@ -706,7 +675,7 @@ class Tests {
         Realm.getInstance(context).use { realm ->
             map.forEach {
                 val count = realm.where(TestEntity::class.java)
-                        .lessThan(TestEntityNames.date(), it.key)
+                        .lessThan(TestEntityNames.recursiveList().date(), it.key)
                         .count()
                 Assert.assertThat(count, CoreMatchers.`is`(it.value))
             }
@@ -722,7 +691,7 @@ class Tests {
         Realm.getInstance(context).use { realm ->
             map.forEach {
                 val count = realm.where(TestEntity::class.java)
-                        .lessThan(TestEntityNames.by(), it.key)
+                        .lessThan(TestEntityNames.recursiveList().by(), it.key)
                         .count()
                 Assert.assertThat(count, CoreMatchers.`is`(it.value))
             }
@@ -738,7 +707,7 @@ class Tests {
         Realm.getInstance(context).use { realm ->
             map.forEach {
                 val count = realm.where(TestEntity::class.java)
-                        .lessThan(TestEntityNames.sh(), it.key)
+                        .lessThan(TestEntityNames.recursiveList().sh(), it.key)
                         .count()
                 Assert.assertThat(count, CoreMatchers.`is`(it.value))
             }
@@ -755,7 +724,7 @@ class Tests {
         Realm.getInstance(context).use { realm ->
             map.forEach {
                 val count = realm.where(TestEntity::class.java)
-                        .lessThan(TestEntityNames.i(), it.key)
+                        .lessThan(TestEntityNames.recursiveList().i(), it.key)
                         .count()
                 Assert.assertThat(count, CoreMatchers.`is`(it.value))
             }
@@ -771,7 +740,7 @@ class Tests {
         Realm.getInstance(context).use { realm ->
             map.forEach {
                 val count = realm.where(TestEntity::class.java)
-                        .lessThan(TestEntityNames.l(), it.key)
+                        .lessThan(TestEntityNames.recursiveList().l(), it.key)
                         .count()
                 Assert.assertThat(count, CoreMatchers.`is`(it.value))
             }
@@ -787,7 +756,7 @@ class Tests {
         Realm.getInstance(context).use { realm ->
             map.forEach {
                 val count = realm.where(TestEntity::class.java)
-                        .lessThan(TestEntityNames.f(), it.key)
+                        .lessThan(TestEntityNames.recursiveList().f(), it.key)
                         .count()
                 Assert.assertThat(count, CoreMatchers.`is`(it.value))
             }
@@ -803,7 +772,7 @@ class Tests {
         Realm.getInstance(context).use { realm ->
             map.forEach {
                 val count = realm.where(TestEntity::class.java)
-                        .lessThan(TestEntityNames.d(), it.key)
+                        .lessThan(TestEntityNames.recursiveList().d(), it.key)
                         .count()
                 Assert.assertThat(count, CoreMatchers.`is`(it.value))
             }
@@ -821,7 +790,7 @@ class Tests {
         Realm.getInstance(context).use { realm ->
             map.forEach {
                 val count = realm.where(TestEntity::class.java)
-                        .lessThanOrEqualTo(TestEntityNames.date(), it.key)
+                        .lessThanOrEqualTo(TestEntityNames.recursiveList().date(), it.key)
                         .count()
                 Assert.assertThat(count, CoreMatchers.`is`(it.value))
             }
@@ -832,12 +801,12 @@ class Tests {
     fun lessThanOrEqualTo_byte() {
         val map = hashMapOf(
                 0.toByte() to 0L,
-                2.toByte() to 2L
+                2.toByte() to 1L
         )
         Realm.getInstance(context).use { realm ->
             map.forEach {
                 val count = realm.where(TestEntity::class.java)
-                        .lessThanOrEqualTo(TestEntityNames.by(), it.key)
+                        .lessThanOrEqualTo(TestEntityNames.recursiveList().by(), it.key)
                         .count()
                 Assert.assertThat(count, CoreMatchers.`is`(it.value))
             }
@@ -848,12 +817,12 @@ class Tests {
     fun lessThanOrEqualTo_short() {
         val map = hashMapOf(
                 0.toShort() to 0L,
-                3.toShort() to 2L
+                3.toShort() to 1L
         )
         Realm.getInstance(context).use { realm ->
             map.forEach {
                 val count = realm.where(TestEntity::class.java)
-                        .lessThanOrEqualTo(TestEntityNames.sh(), it.key)
+                        .lessThanOrEqualTo(TestEntityNames.recursiveList().sh(), it.key)
                         .count()
                 Assert.assertThat(count, CoreMatchers.`is`(it.value))
             }
@@ -865,12 +834,12 @@ class Tests {
     fun lessThanOrEqualTo_int() {
         val map = hashMapOf(
                 0 to 0L,
-                4 to 2L
+                4 to 1L
         )
         Realm.getInstance(context).use { realm ->
             map.forEach {
                 val count = realm.where(TestEntity::class.java)
-                        .lessThanOrEqualTo(TestEntityNames.i(), it.key)
+                        .lessThanOrEqualTo(TestEntityNames.recursiveList().i(), it.key)
                         .count()
                 Assert.assertThat(count, CoreMatchers.`is`(it.value))
             }
@@ -881,12 +850,12 @@ class Tests {
     fun lessThanOrEqualTo_long() {
         val map = hashMapOf(
                 0L to 0L,
-                5L to 2L
+                5L to 1L
         )
         Realm.getInstance(context).use { realm ->
             map.forEach {
                 val count = realm.where(TestEntity::class.java)
-                        .lessThanOrEqualTo(TestEntityNames.l(), it.key)
+                        .lessThanOrEqualTo(TestEntityNames.recursiveList().l(), it.key)
                         .count()
                 Assert.assertThat(count, CoreMatchers.`is`(it.value))
             }
@@ -897,12 +866,12 @@ class Tests {
     fun lessThanOrEqualTo_float() {
         val map = hashMapOf(
                 0f to 0L,
-                6f to 2L
+                6f to 1L
         )
         Realm.getInstance(context).use { realm ->
             map.forEach {
                 val count = realm.where(TestEntity::class.java)
-                        .lessThanOrEqualTo(TestEntityNames.f(), it.key)
+                        .lessThanOrEqualTo(TestEntityNames.recursiveList().f(), it.key)
                         .count()
                 Assert.assertThat(count, CoreMatchers.`is`(it.value))
             }
@@ -913,162 +882,50 @@ class Tests {
     fun lessThanOrEqualTo_double() {
         val map = hashMapOf(
                 0.0 to 0L,
-                7.0 to 2L
+                7.0 to 1L
         )
         Realm.getInstance(context).use { realm ->
             map.forEach {
                 val count = realm.where(TestEntity::class.java)
-                        .lessThanOrEqualTo(TestEntityNames.d(), it.key)
+                        .lessThanOrEqualTo(TestEntityNames.recursiveList().d(), it.key)
                         .count()
                 Assert.assertThat(count, CoreMatchers.`is`(it.value))
             }
         }
     }
-
-    @Test
-    fun maximumDate() {
-        Realm.getInstance(context).use {
-            val max = it.where(TestEntity::class.java).maximumDate(TestEntityNames.date())
-            Assert.assertThat(max, CoreMatchers.notNullValue())
-        }
-    }
-
-    @Test
-    fun max_byte() {
-        Realm.getInstance(context).use {
-            val max = it.where(TestEntity::class.java).max(TestEntityNames.by())
-            Assert.assertThat(max.toByte(), CoreMatchers.`is`(2.toByte()))
-        }
-    }
-
-    @Test
-    fun max_short() {
-        Realm.getInstance(context).use {
-            val max = it.where(TestEntity::class.java).max(TestEntityNames.sh())
-            Assert.assertThat(max.toShort(), CoreMatchers.`is`(3.toShort()))
-        }
-    }
-
-    @Test
-    fun max_int() {
-        Realm.getInstance(context).use {
-            val max = it.where(TestEntity::class.java).max(TestEntityNames.i())
-            Assert.assertThat(max.toInt(), CoreMatchers.`is`(4.toInt()))
-        }
-    }
-
-    @Test
-    fun max_long() {
-        Realm.getInstance(context).use {
-            val max = it.where(TestEntity::class.java).max(TestEntityNames.l())
-            Assert.assertThat(max.toLong(), CoreMatchers.`is`(5.toLong()))
-        }
-    }
-
-    @Test
-    fun max_float() {
-        Realm.getInstance(context).use {
-            val max = it.where(TestEntity::class.java).max(TestEntityNames.f())
-            Assert.assertThat(max.toFloat(), CoreMatchers.`is`(6.toFloat()))
-        }
-    }
-
-    @Test
-    fun max_double() {
-        Realm.getInstance(context).use {
-            val max = it.where(TestEntity::class.java).max(TestEntityNames.d())
-            Assert.assertThat(max.toDouble(), CoreMatchers.`is`(7.toDouble()))
-        }
-    }
-
-
-    @Test
-    fun minimumDate() {
-        Realm.getInstance(context).use {
-            val min = it.where(TestEntity::class.java).minimumDate(TestEntityNames.date())
-            Assert.assertThat(min, CoreMatchers.notNullValue())
-        }
-    }
-
-    @Test
-    fun min_byte() {
-        Realm.getInstance(context).use {
-            val min = it.where(TestEntity::class.java).min(TestEntityNames.by())
-            Assert.assertThat(min.toByte(), CoreMatchers.`is`(1.toByte()))
-        }
-    }
-
-    @Test
-    fun min_short() {
-        Realm.getInstance(context).use {
-            val min = it.where(TestEntity::class.java).min(TestEntityNames.sh())
-            Assert.assertThat(min.toShort(), CoreMatchers.`is`(2.toShort()))
-        }
-    }
-
-    @Test
-    fun min_int() {
-        Realm.getInstance(context).use {
-            val min = it.where(TestEntity::class.java).min(TestEntityNames.i())
-            Assert.assertThat(min.toInt(), CoreMatchers.`is`(3.toInt()))
-        }
-    }
-
-    @Test
-    fun min_long() {
-        Realm.getInstance(context).use {
-            val min = it.where(TestEntity::class.java).min(TestEntityNames.l())
-            Assert.assertThat(min.toLong(), CoreMatchers.`is`(4.toLong()))
-        }
-    }
-
-    @Test
-    fun min_float() {
-        Realm.getInstance(context).use {
-            val min = it.where(TestEntity::class.java).min(TestEntityNames.f())
-            Assert.assertThat(min.toFloat(), CoreMatchers.`is`(5.toFloat()))
-        }
-    }
-
-    @Test
-    fun min_double() {
-        Realm.getInstance(context).use {
-            val min = it.where(TestEntity::class.java).min(TestEntityNames.d())
-            Assert.assertThat(min.toDouble(), CoreMatchers.`is`(6.toDouble()))
-        }
-    }
-
 
     @Test
     fun notEqualTo_string() {
         val map = hashMapOf(
-                null to 2L,
+                null to 1L,
                 "string" to 1L,
-                "String" to 2L,
-                "test" to 2L
+                "String" to 1L,
+                "test" to 1L
         )
         Realm.getInstance(context).use { realm ->
             map.forEach {
                 val count = realm.where(TestEntity::class.java)
-                        .notEqualTo(TestEntityNames.string(), it.key)
+                        .notEqualTo(TestEntityNames.recursiveList().string(), it.key)
                         .count()
                 Assert.assertThat(count, CoreMatchers.`is`(it.value))
             }
         }
     }
 
-    @Test
+    // Realm 0.84.2
+    // java.lang.IllegalArgumentException: Link queries cannot be case insensitive - coming soon.
+    @Test(expected = IllegalArgumentException::class)
     fun notEqualTo_string_ignore_case() {
         val map = hashMapOf(
-                null to 2L,
+                null to 1L,
                 "string" to 1L,
                 "String" to 1L,
-                "test" to 2L
+                "test" to 1L
         )
         Realm.getInstance(context).use { realm ->
             map.forEach {
                 val count = realm.where(TestEntity::class.java)
-                        .notEqualTo(TestEntityNames.string(), it.key, false)
+                        .notEqualTo(TestEntityNames.recursiveList().string(), it.key, false)
                         .count()
                 Assert.assertThat(count, CoreMatchers.`is`(it.value))
             }
@@ -1078,13 +935,13 @@ class Tests {
     @Test
     fun notEqualTo_boolean() {
         val map = hashMapOf(
-                null to 2L,
+                null to 1L,
                 true to 1L
         )
         Realm.getInstance(context).use { realm ->
             map.forEach {
                 val count = realm.where(TestEntity::class.java)
-                        .notEqualTo(TestEntityNames.b(), it.key)
+                        .notEqualTo(TestEntityNames.recursiveList().b(), it.key)
                         .count()
                 Assert.assertThat(count, CoreMatchers.`is`(it.value))
             }
@@ -1094,13 +951,13 @@ class Tests {
     @Test
     fun notEqualTo_byte() {
         val map = hashMapOf(
-                null to 2L,
+                null to 1L,
                 1.toByte() to 1L
         )
         Realm.getInstance(context).use { realm ->
             map.forEach {
                 val count = realm.where(TestEntity::class.java)
-                        .notEqualTo(TestEntityNames.by(), it.key)
+                        .notEqualTo(TestEntityNames.recursiveList().by(), it.key)
                         .count()
                 Assert.assertThat(count, CoreMatchers.`is`(it.value))
             }
@@ -1110,13 +967,13 @@ class Tests {
     @Test
     fun notEqualTo_short() {
         val map = hashMapOf(
-                null to 2L,
+                null to 1L,
                 2.toShort() to 1L
         )
         Realm.getInstance(context).use { realm ->
             map.forEach {
                 val count = realm.where(TestEntity::class.java)
-                        .notEqualTo(TestEntityNames.sh(), it.key)
+                        .notEqualTo(TestEntityNames.recursiveList().sh(), it.key)
                         .count()
                 Assert.assertThat(count, CoreMatchers.`is`(it.value))
             }
@@ -1126,13 +983,13 @@ class Tests {
     @Test
     fun notEqualTo_int() {
         val map = hashMapOf(
-                null to 2L,
+                null to 1L,
                 3 to 1L
         )
         Realm.getInstance(context).use { realm ->
             map.forEach {
                 val count = realm.where(TestEntity::class.java)
-                        .notEqualTo(TestEntityNames.i(), it.key)
+                        .notEqualTo(TestEntityNames.recursiveList().i(), it.key)
                         .count()
                 Assert.assertThat(count, CoreMatchers.`is`(it.value))
             }
@@ -1142,13 +999,13 @@ class Tests {
     @Test
     fun notEqualTo_long() {
         val map = hashMapOf(
-                null to 2L,
+                null to 1L,
                 4L to 1L
         )
         Realm.getInstance(context).use { realm ->
             map.forEach {
                 val count = realm.where(TestEntity::class.java)
-                        .notEqualTo(TestEntityNames.l(), it.key)
+                        .notEqualTo(TestEntityNames.recursiveList().l(), it.key)
                         .count()
                 Assert.assertThat(count, CoreMatchers.`is`(it.value))
             }
@@ -1158,13 +1015,13 @@ class Tests {
     @Test
     fun notEqualTo_float() {
         val map = hashMapOf(
-                null to 2L,
+                null to 1L,
                 5f to 1L
         )
         Realm.getInstance(context).use { realm ->
             map.forEach {
                 val count = realm.where(TestEntity::class.java)
-                        .notEqualTo(TestEntityNames.f(), it.key)
+                        .notEqualTo(TestEntityNames.recursiveList().f(), it.key)
                         .count()
                 Assert.assertThat(count, CoreMatchers.`is`(it.value))
             }
@@ -1174,13 +1031,13 @@ class Tests {
     @Test
     fun notEqualTo_double() {
         val map = hashMapOf(
-                null to 2L,
+                null to 1L,
                 6.0 to 1L
         )
         Realm.getInstance(context).use { realm ->
             map.forEach {
                 val count = realm.where(TestEntity::class.java)
-                        .notEqualTo(TestEntityNames.d(), it.key)
+                        .notEqualTo(TestEntityNames.recursiveList().d(), it.key)
                         .count()
                 Assert.assertThat(count, CoreMatchers.`is`(it.value))
             }
@@ -1190,121 +1047,16 @@ class Tests {
     @Test
     fun notEqualTo_date() {
         val map = hashMapOf(
-                null to 2L,
+                null to 1L,
                 Date() to 0L
         )
         Realm.getInstance(context).use { realm ->
             map.forEach {
                 val count = realm.where(TestEntity::class.java)
-                        .notEqualTo(TestEntityNames.date(), it.key)
+                        .notEqualTo(TestEntityNames.recursiveList().date(), it.key)
                         .count()
                 Assert.assertThat(count, CoreMatchers.`is`(it.value))
             }
         }
     }
-
-
-    @Test
-    fun sum_byte() {
-        Realm.getInstance(context).use {
-            val avg = it.where(TestEntity::class.java).sum(TestEntityNames.by())
-            Assert.assertThat(avg.toDouble(), CoreMatchers.`is`(3.0))
-        }
-    }
-
-    @Test
-    fun sum_short() {
-        Realm.getInstance(context).use {
-            val avg = it.where(TestEntity::class.java).sum(TestEntityNames.sh())
-            Assert.assertThat(avg.toDouble(), CoreMatchers.`is`(5.0))
-        }
-    }
-
-    @Test
-    fun sum_int() {
-        Realm.getInstance(context).use {
-            val avg = it.where(TestEntity::class.java).sum(TestEntityNames.i())
-            Assert.assertThat(avg.toDouble(), CoreMatchers.`is`(7.0))
-        }
-    }
-
-    @Test
-    fun sum_long() {
-        Realm.getInstance(context).use {
-            val avg = it.where(TestEntity::class.java).sum(TestEntityNames.l())
-            Assert.assertThat(avg.toDouble(), CoreMatchers.`is`(9.0))
-        }
-    }
-
-    @Test
-    fun sum_float() {
-        Realm.getInstance(context).use {
-            val avg = it.where(TestEntity::class.java).sum(TestEntityNames.f())
-            Assert.assertThat(avg.toDouble(), CoreMatchers.`is`(11.0))
-        }
-    }
-
-    @Test
-    fun sum_double() {
-        Realm.getInstance(context).use {
-            val avg = it.where(TestEntity::class.java).sum(TestEntityNames.d())
-            Assert.assertThat(avg.toDouble(), CoreMatchers.`is`(13.0))
-        }
-    }
-
-    /*
-    @Test(expected = IllegalArgumentException::class)
-    fun equalTo_string_number() {
-        Realm.getInstance(context).use {
-            val count = it.where(TestEntity::class.java)
-                    .equalTo("string", 1)
-                    .count()
-            // expected Exception
-            Assert.assertThat(count, CoreMatchers.`is`(0L))
-        }
-    }
-
-    @Test(expected = IllegalArgumentException::class)
-    fun equalTo_string_boolean() {
-        Realm.getInstance(context).use {
-            val count = it.where(TestEntity::class.java)
-                    .equalTo("string", false)
-                    .count()
-            // expected Exception
-            Assert.assertThat(count, CoreMatchers.`is`(0L))
-        }
-    }
-
-    @Test
-    fun equalTo_boolean() {
-        Realm.getInstance(context).use {
-            val count = it.where(TestEntity::class.java)
-                    .equalTo(TestEntityNames.b(), false) // TypeSafe!
-                    .count()
-            Assert.assertThat(count, CoreMatchers.`is`(1L))
-        }
-    }
-
-    @Test(expected = IllegalArgumentException::class)
-    fun equalTo_boolean_number() {
-        Realm.getInstance(context).use {
-            val count = it.where(TestEntity::class.java)
-                    .equalTo("b", 1)
-                    .count()
-            // expected Exception
-            Assert.assertThat(count, CoreMatchers.`is`(0L))
-        }
-    }
-
-    @Test(expected = IllegalArgumentException::class)
-    fun equalTo_boolean_string() {
-        Realm.getInstance(context).use {
-            val count = it.where(TestEntity::class.java)
-                    .equalTo("b", "false")
-                    .count()
-            // expected Exception
-            Assert.assertThat(count, CoreMatchers.`is`(0L))
-        }
-    }
-    */
 }

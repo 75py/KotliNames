@@ -22,7 +22,7 @@ ext {
     publish_version_name = versionName()
     publish_version_code = versionCode()
     kotlin_version = '1.0.0-beta-1103'
-    realm_version = '0.84.1'
+    realm_version = '0.84.2'
     compile_sdk_version = 23
     build_tool_version = "23.0.1"
 }
@@ -72,7 +72,7 @@ Integer versionCode() {
 }
 
 void generateReadMe() {
-    def template = file('README.md.template').text
+    def template = file('README.template.md').text
     def result = template
             .replaceAll("%%version%%", versionName())
             .replaceAll("%%realm_version%%", realm_version as String)

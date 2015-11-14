@@ -85,10 +85,10 @@ Realm.getInstance(context).use {
 
 ```groovy
 dependencies {
-    compile 'io.realm:realm-android:0.84.2'
+    compile 'io.realm:realm-android:%%realm_version%%'
 
-    compile 'com.nagopy.android:kotlinames:2.0.0'
-    kapt 'com.nagopy.android:kotlinames-compiler:2.0.0'
+    compile 'com.nagopy.android:kotlinames:%%version%%'
+    kapt 'com.nagopy.android:kotlinames-compiler:%%version%%'
 }
 ```
 
@@ -127,6 +127,6 @@ kapt {
 
 ## Version
 
-Library version : 2.0.0
+Library version : %%version%%
 
-Supported Realm version: 0.84.2
+Supported Realm version: %%realm_version%%
