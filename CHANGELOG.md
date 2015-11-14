@@ -1,7 +1,7 @@
 Change Log
 ==========
 
-Version 2.0.0 *(2015-11-14)*
+Version 2.0.1 *(2015-11-14)*
 ----------------------------
 * Support Realm 0.84.2
 * Support Required annotation
