@@ -1,5 +1,4 @@
 apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
 apply plugin: 'com.novoda.bintray-release'
 
 android {
@@ -18,37 +17,17 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    sourceSets {
-        main.java.srcDirs += 'src/main/kotlin'
-    }
-    lintOptions {
-        abortOnError false
-    }
 }
 
 dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     compile project(':kotlinames-common')
-    provided "io.realm:realm-android:$realm_version"
-}
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-    }
-}
-repositories {
-    mavenCentral()
 }
 
 publish {
     groupId = 'com.nagopy.android'
-    artifactId = 'kotlinames'
+    artifactId = 'kotlinamesj'
     publishVersion = publish_version_name
     desc = 'Type safe Realm!'
     bintrayUser = bintray_user
     bintrayKey = bintray_api_key
 }
-

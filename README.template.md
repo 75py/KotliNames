@@ -87,8 +87,13 @@ Realm.getInstance(context).use {
 dependencies {
     compile 'io.realm:realm-android:%%realm_version%%'
 
+    // for Kotlin (Recommended)
     compile 'com.nagopy.android:kotlinames:%%version%%'
     kapt 'com.nagopy.android:kotlinames-compiler:%%version%%'
+
+    // for Java (not type safe but typo safe)
+    compile 'com.nagopy.android:kotlinamesj:%%version%%'
+    apt 'com.nagopy.android:kotlinames-compiler:%%version%%'
 }
 ```
 
