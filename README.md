@@ -88,12 +88,12 @@ dependencies {
     compile 'io.realm:realm-android:0.84.2'
 
     // for Kotlin (Recommended)
-    compile 'com.nagopy.android:kotlinames:2.1.0'
-    kapt 'com.nagopy.android:kotlinames-compiler:2.1.0'
+    compile 'com.nagopy.android:kotlinames:2.1.1'
+    kapt 'com.nagopy.android:kotlinames-compiler:2.1.1'
 
     // for Java (not type safe but typo safe)
-    compile 'com.nagopy.android:kotlinamesj:2.1.0'
-    apt 'com.nagopy.android:kotlinames-compiler:2.1.0'
+    compile 'com.nagopy.android:kotlinamesj:2.1.1'
+    apt 'com.nagopy.android:kotlinames-compiler:2.1.1'
 }
 ```
 
@@ -132,6 +132,6 @@ kapt {
 
 ## Version
 
-Library version : 2.1.0
+Library version : 2.1.1
 
 Supported Realm version: 0.84.2
