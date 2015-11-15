@@ -28,7 +28,7 @@ android {
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    compile project(':kotlinamesj')
+    compile project(':kotlinames-common')
     provided "io.realm:realm-android:$realm_version"
 }
 buildscript {
