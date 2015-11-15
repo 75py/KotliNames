@@ -1,0 +1,17 @@
+apply plugin: 'java'
+apply plugin: 'com.novoda.bintray-release'
+
+targetCompatibility = JavaVersion.VERSION_1_7
+sourceCompatibility = JavaVersion.VERSION_1_7
+
+dependencies {
+}
+
+publish {
+    groupId = 'com.nagopy.android'
+    artifactId = 'kotlinames-common'
+    publishVersion = publish_version_name
+    desc = 'Type safe Realm!'
+    bintrayUser = bintray_user
+    bintrayKey = bintray_api_key
+}
