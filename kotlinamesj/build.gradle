@@ -1,14 +1,15 @@
 apply plugin: 'com.android.library'
+apply plugin: 'com.novoda.bintray-release'
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.1"
+    compileSdkVersion compile_sdk_version
+    buildToolsVersion build_tool_version
 
     defaultConfig {
         minSdkVersion 10
         targetSdkVersion 23
-        versionCode 1
-        versionName "1.0"
+        versionCode publish_version_code
+        versionName publish_version_name
     }
     buildTypes {
         release {
@@ -19,4 +20,13 @@ android {
 }
 
 dependencies {
+}
+
+publish {
+    groupId = 'com.nagopy.android'
+    artifactId = 'kotlinamesj'
+    publishVersion = publish_version_name
+    desc = 'Type safe Realm!'
+    bintrayUser = bintray_user
+    bintrayKey = bintray_api_key
 }
