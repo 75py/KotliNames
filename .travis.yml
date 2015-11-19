@@ -4,6 +4,10 @@ env:
   global:
     - ADB_INSTALL_TIMEOUT=10
 
+branches:
+  only:
+    - develop
+
 jdk:
  - oraclejdk8
 
