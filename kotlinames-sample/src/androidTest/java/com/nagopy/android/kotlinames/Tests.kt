@@ -28,6 +28,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.util.*
+import kotlin.test.fail
 
 @RunWith(AndroidJUnit4::class)
 class Tests {
@@ -73,6 +74,11 @@ class Tests {
                 test2.date = Date()
             }
         }
+    }
+
+    @Test
+    fun errorTest() {
+        fail("Fail test!");
     }
 
     @Test
