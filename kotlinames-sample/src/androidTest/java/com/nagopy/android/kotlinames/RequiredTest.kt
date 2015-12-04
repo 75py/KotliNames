@@ -20,6 +20,7 @@ import android.content.Context
 import android.support.test.InstrumentationRegistry
 import android.support.test.runner.AndroidJUnit4
 import com.nagopy.android.kotlinames.names.RequiredTestEntityNames
+import io.realm.Case
 import io.realm.Realm
 import io.realm.RealmConfiguration
 import org.hamcrest.CoreMatchers
@@ -150,7 +151,7 @@ class RequiredTest {
         Realm.getInstance(context).use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
-                        .beginsWith(RequiredTestEntityNames.string(), it.key, false)
+                        .beginsWith(RequiredTestEntityNames.string(), it.key, Case.INSENSITIVE)
                         .count()
                 Assert.assertThat(count, CoreMatchers.`is`(it.value))
             }
@@ -244,7 +245,7 @@ class RequiredTest {
         Realm.getInstance(context).use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
-                        .contains(RequiredTestEntityNames.string(), it.key, false)
+                        .contains(RequiredTestEntityNames.string(), it.key, Case.INSENSITIVE)
                         .count()
                 Assert.assertThat(count, CoreMatchers.`is`(it.value))
             }
@@ -280,7 +281,7 @@ class RequiredTest {
         Realm.getInstance(context).use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
-                        .endsWith(RequiredTestEntityNames.string(), it.key, false)
+                        .endsWith(RequiredTestEntityNames.string(), it.key, Case.INSENSITIVE)
                         .count()
                 Assert.assertThat(count, CoreMatchers.`is`(it.value))
             }
@@ -316,7 +317,7 @@ class RequiredTest {
         Realm.getInstance(context).use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
-                        .equalTo(RequiredTestEntityNames.string(), it.key, false)
+                        .equalTo(RequiredTestEntityNames.string(), it.key, Case.INSENSITIVE)
                         .count()
                 Assert.assertThat(count, CoreMatchers.`is`(it.value))
             }
@@ -1082,7 +1083,7 @@ class RequiredTest {
         Realm.getInstance(context).use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
-                        .notEqualTo(RequiredTestEntityNames.string(), it.key, false)
+                        .notEqualTo(RequiredTestEntityNames.string(), it.key, Case.INSENSITIVE)
                         .count()
                 Assert.assertThat(count, CoreMatchers.`is`(it.value))
             }

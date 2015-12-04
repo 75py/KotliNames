@@ -132,9 +132,13 @@ kapt {
 
 ## Version
 
-Library version : %%version%%
-
+Latest KotliNames version : %%version%%
 Supported Realm version: %%realm_version%%
+
+|Realm|KotliNames|
+|---|---|
+|-0.85.1|-2.1.1|
+|0.86.0-|3.0.0-|
 
 
 ## License

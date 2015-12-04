@@ -20,6 +20,7 @@ import android.content.Context
 import android.support.test.InstrumentationRegistry
 import android.support.test.runner.AndroidJUnit4
 import com.nagopy.android.kotlinames.names.TestEntityNames
+import io.realm.Case
 import io.realm.Realm
 import io.realm.RealmConfiguration
 import org.hamcrest.CoreMatchers
@@ -152,7 +153,7 @@ class Tests {
         Realm.getInstance(context).use { realm ->
             map.forEach {
                 val count = realm.where(TestEntity::class.java)
-                        .beginsWith(TestEntityNames.string(), it.key, false)
+                        .beginsWith(TestEntityNames.string(), it.key, Case.INSENSITIVE)
                         .count()
                 Assert.assertThat(count, CoreMatchers.`is`(it.value))
             }
@@ -246,7 +247,7 @@ class Tests {
         Realm.getInstance(context).use { realm ->
             map.forEach {
                 val count = realm.where(TestEntity::class.java)
-                        .contains(TestEntityNames.string(), it.key, false)
+                        .contains(TestEntityNames.string(), it.key, Case.INSENSITIVE)
                         .count()
                 Assert.assertThat(count, CoreMatchers.`is`(it.value))
             }
@@ -282,7 +283,7 @@ class Tests {
         Realm.getInstance(context).use { realm ->
             map.forEach {
                 val count = realm.where(TestEntity::class.java)
-                        .endsWith(TestEntityNames.string(), it.key, false)
+                        .endsWith(TestEntityNames.string(), it.key, Case.INSENSITIVE)
                         .count()
                 Assert.assertThat(count, CoreMatchers.`is`(it.value))
             }
@@ -318,7 +319,7 @@ class Tests {
         Realm.getInstance(context).use { realm ->
             map.forEach {
                 val count = realm.where(TestEntity::class.java)
-                        .equalTo(TestEntityNames.string(), it.key, false)
+                        .equalTo(TestEntityNames.string(), it.key, Case.INSENSITIVE)
                         .count()
                 Assert.assertThat(count, CoreMatchers.`is`(it.value))
             }
@@ -1084,7 +1085,7 @@ class Tests {
         Realm.getInstance(context).use { realm ->
             map.forEach {
                 val count = realm.where(TestEntity::class.java)
-                        .notEqualTo(TestEntityNames.string(), it.key, false)
+                        .notEqualTo(TestEntityNames.string(), it.key, Case.INSENSITIVE)
                         .count()
                 Assert.assertThat(count, CoreMatchers.`is`(it.value))
             }
