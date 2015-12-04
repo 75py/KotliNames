@@ -20,6 +20,7 @@ import android.content.Context
 import android.support.test.InstrumentationRegistry
 import android.support.test.runner.AndroidJUnit4
 import com.nagopy.android.kotlinames.names.RequiredTestEntityNames
+import io.realm.Case
 import io.realm.Realm
 import io.realm.RealmConfiguration
 import io.realm.RealmList
@@ -112,7 +113,7 @@ class RelationshipRequiredTest {
         Realm.getInstance(context).use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
-                        .beginsWith(RequiredTestEntityNames.recursiveList().string(), it.key, false)
+                        .beginsWith(RequiredTestEntityNames.recursiveList().string(), it.key, Case.INSENSITIVE)
                         .count()
                 Assert.assertThat(count, CoreMatchers.`is`(it.value))
             }
@@ -208,7 +209,7 @@ class RelationshipRequiredTest {
         Realm.getInstance(context).use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
-                        .contains(RequiredTestEntityNames.recursiveList().string(), it.key, false)
+                        .contains(RequiredTestEntityNames.recursiveList().string(), it.key, Case.INSENSITIVE)
                         .count()
                 Assert.assertThat(count, CoreMatchers.`is`(it.value))
             }
@@ -244,7 +245,7 @@ class RelationshipRequiredTest {
         Realm.getInstance(context).use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
-                        .endsWith(RequiredTestEntityNames.recursiveList().string(), it.key, false)
+                        .endsWith(RequiredTestEntityNames.recursiveList().string(), it.key, Case.INSENSITIVE)
                         .count()
                 Assert.assertThat(count, CoreMatchers.`is`(it.value))
             }
@@ -280,7 +281,7 @@ class RelationshipRequiredTest {
         Realm.getInstance(context).use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
-                        .equalTo(RequiredTestEntityNames.recursiveList().string(), it.key, false)
+                        .equalTo(RequiredTestEntityNames.recursiveList().string(), it.key, Case.INSENSITIVE)
                         .count()
                 Assert.assertThat(count, CoreMatchers.`is`(it.value))
             }
@@ -934,7 +935,7 @@ class RelationshipRequiredTest {
         Realm.getInstance(context).use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
-                        .notEqualTo(RequiredTestEntityNames.recursiveList().string(), it.key, false)
+                        .notEqualTo(RequiredTestEntityNames.recursiveList().string(), it.key, Case.INSENSITIVE)
                         .count()
                 Assert.assertThat(count, CoreMatchers.`is`(it.value))
             }
