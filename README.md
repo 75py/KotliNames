@@ -85,15 +85,15 @@ Realm.getInstance(context).use {
 
 ```groovy
 dependencies {
-    compile 'io.realm:realm-android:0.86.0'
+    compile 'io.realm:realm-android:0.87.4'
 
     // for Kotlin (Recommended)
-    compile 'com.nagopy.android:kotlinames:3.0.0'
-    kapt 'com.nagopy.android:kotlinames-compiler:3.0.0'
+    compile 'com.nagopy.android:kotlinames:4.0.0'
+    kapt 'com.nagopy.android:kotlinames-compiler:4.0.0'
 
     // for Java (not type safe but typo safe)
-    compile 'com.nagopy.android:kotlinamesj:3.0.0'
-    apt 'com.nagopy.android:kotlinames-compiler:3.0.0'
+    compile 'com.nagopy.android:kotlinamesj:4.0.0'
+    apt 'com.nagopy.android:kotlinames-compiler:4.0.0'
 }
 ```
 
@@ -132,13 +132,14 @@ kapt {
 
 ## Version
 
-Latest KotliNames version : 3.0.0
-Supported Realm version: 0.86.0
+Latest KotliNames version : 4.0.0
+Supported Realm version: 0.87.4
 
-|Realm|KotliNames|
-|---|---|
-|-0.85.1|-2.1.1|
-|0.86.0-|3.0.0-|
+|Kotlin|Realm|KotliNames|
+|---|---|---|
+|-1.0.0-beta-xxxx|-0.85.1|-2.1.1|
+|-1.0.0-beta-xxxx|0.86.0-|3.0.0-|
+|1.0.0-rc-1036|0.86.0-|4.0.0-|
 
 
 ## License
