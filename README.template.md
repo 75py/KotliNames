@@ -140,6 +140,7 @@ Supported Realm version: %%realm_version%%
 |-1.0.0-beta-xxxx|-0.85.1|-2.1.1|
 |-1.0.0-beta-xxxx|0.86.0-|3.0.0-|
 |1.0.0-rc-1036|0.86.0-|4.0.0-|
+|1.0.0|0.86.0-|5.0.0-|
 
 
 ## License
