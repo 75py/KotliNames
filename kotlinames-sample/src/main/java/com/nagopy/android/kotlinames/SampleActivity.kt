@@ -31,7 +31,8 @@ class SampleActivity : AppCompatActivity() {
 
         textView = TextView(this)
 
-        Realm.getInstance(this).use {
+        Realm.init(this)
+        Realm.getDefaultInstance().use {
             it.where(Cat::class.java)
                     // Type safe! Cat.name can compare to String type only.
                     .equalTo(CatNames.name(), "john")

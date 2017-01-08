@@ -1,5 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'realm-android'
 
 android {
     compileSdkVersion compile_sdk_version
@@ -29,7 +31,8 @@ android {
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    compile "io.realm:realm-android:$realm_version"
+//    compile "io.realm:realm-android-library:${realm_version}"
+//    compile "io.realm:realm-annotations:${realm_version}"
     compile project(":kotlinames")
     provided project(":kotlinames-compiler") // kaptが発火しないので設定しておく
     kapt project(":kotlinames-compiler")
@@ -54,7 +57,6 @@ repositories {
 }
 
 kapt {
-    generateStubs = true
     arguments {
         arg("kotlinames.debug", "true")
     }

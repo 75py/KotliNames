@@ -22,7 +22,6 @@ import android.support.test.runner.AndroidJUnit4
 import com.nagopy.android.kotlinames.names.RequiredTestEntityNames
 import io.realm.Case
 import io.realm.Realm
-import io.realm.RealmConfiguration
 import io.realm.RealmList
 import org.hamcrest.CoreMatchers
 import org.junit.Assert
@@ -36,15 +35,18 @@ class RelationshipRequiredTest {
 
     lateinit var context: Context
 
+    var setupDate: Date? = null
+
     @Before
     fun setup() {
+        setupDate = Date()
         context = InstrumentationRegistry.getTargetContext()
 
-        Realm.deleteRealm(RealmConfiguration.Builder(context).build())
+        Realm.init(context)
 
-        Realm.getInstance(context).use {
+        Realm.getDefaultInstance().use {
             it.executeTransaction {
-                it.where(RequiredTestEntity::class.java).findAll().clear()
+                it.where(RequiredTestEntity::class.java).findAll().deleteAllFromRealm()
             }
             it.executeTransaction {
                 val test1 = it.createObject(RequiredTestEntity::class.java)
@@ -57,7 +59,7 @@ class RelationshipRequiredTest {
                 test1.l = 4
                 test1.f = 5.0f
                 test1.d = 6.0
-                test1.date = Date()
+                test1.date = setupDate
                 test1.recursive = null
                 test1.recursiveList = null
 
@@ -71,7 +73,7 @@ class RelationshipRequiredTest {
                 test2.l = 5
                 test2.f = 6.0f
                 test2.d = 7.0
-                test2.date = Date()
+                test2.date = setupDate
                 test2.recursive = null
                 test2.recursiveList = null
 
@@ -92,7 +94,7 @@ class RelationshipRequiredTest {
                 "Str" to 0L,
                 "test" to 0L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .beginsWith(RequiredTestEntityNames.recursiveList().string(), it.key)
@@ -110,7 +112,7 @@ class RelationshipRequiredTest {
                 "Str" to 1L,
                 "test" to 0L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .beginsWith(RequiredTestEntityNames.recursiveList().string(), it.key, Case.INSENSITIVE)
@@ -124,7 +126,7 @@ class RelationshipRequiredTest {
     // java.lang.IllegalArgumentException: Illegal Argument: between() does not support queries using child object fields.
     @Test(expected = IllegalArgumentException::class)
     fun between_date() {
-        Realm.getInstance(context).use {
+        Realm.getDefaultInstance().use {
             val calendar = Calendar.getInstance()
             calendar.add(Calendar.DATE, 1)
             val count = it.where(RequiredTestEntity::class.java).between(RequiredTestEntityNames.recursiveList().date(), calendar.time, calendar.time).count()
@@ -134,7 +136,7 @@ class RelationshipRequiredTest {
 
     @Test(expected = IllegalArgumentException::class)
     fun between_byte() {
-        Realm.getInstance(context).use {
+        Realm.getDefaultInstance().use {
             val count = it.where(RequiredTestEntity::class.java).between(RequiredTestEntityNames.recursiveList().by(), 2, 3).count()
             Assert.assertThat(count, CoreMatchers.`is`(1L))
         }
@@ -142,7 +144,7 @@ class RelationshipRequiredTest {
 
     @Test(expected = IllegalArgumentException::class)
     fun between_short() {
-        Realm.getInstance(context).use {
+        Realm.getDefaultInstance().use {
             val count = it.where(RequiredTestEntity::class.java).between(RequiredTestEntityNames.recursiveList().sh(), 3, 4).count()
             Assert.assertThat(count, CoreMatchers.`is`(1L))
         }
@@ -150,7 +152,7 @@ class RelationshipRequiredTest {
 
     @Test(expected = IllegalArgumentException::class)
     fun between_int() {
-        Realm.getInstance(context).use {
+        Realm.getDefaultInstance().use {
             val count = it.where(RequiredTestEntity::class.java).between(RequiredTestEntityNames.recursiveList().i(), 4, 5).count()
             Assert.assertThat(count, CoreMatchers.`is`(1L))
         }
@@ -158,7 +160,7 @@ class RelationshipRequiredTest {
 
     @Test(expected = IllegalArgumentException::class)
     fun between_long() {
-        Realm.getInstance(context).use {
+        Realm.getDefaultInstance().use {
             val count = it.where(RequiredTestEntity::class.java).between(RequiredTestEntityNames.recursiveList().l(), 5, 6).count()
             Assert.assertThat(count, CoreMatchers.`is`(1L))
         }
@@ -166,7 +168,7 @@ class RelationshipRequiredTest {
 
     @Test(expected = IllegalArgumentException::class)
     fun between_float() {
-        Realm.getInstance(context).use {
+        Realm.getDefaultInstance().use {
             val count = it.where(RequiredTestEntity::class.java).between(RequiredTestEntityNames.recursiveList().f(), 6f, 7f).count()
             Assert.assertThat(count, CoreMatchers.`is`(1L))
         }
@@ -174,7 +176,7 @@ class RelationshipRequiredTest {
 
     @Test(expected = IllegalArgumentException::class)
     fun between_double() {
-        Realm.getInstance(context).use {
+        Realm.getDefaultInstance().use {
             val count = it.where(RequiredTestEntity::class.java).between(RequiredTestEntityNames.recursiveList().d(), 7.0, 8.0).count()
             Assert.assertThat(count, CoreMatchers.`is`(1L))
         }
@@ -188,7 +190,7 @@ class RelationshipRequiredTest {
                 "Str" to 0L,
                 "test" to 0L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .contains(RequiredTestEntityNames.recursiveList().string(), it.key)
@@ -206,7 +208,7 @@ class RelationshipRequiredTest {
                 "Str" to 1L,
                 "test" to 0L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .contains(RequiredTestEntityNames.recursiveList().string(), it.key, Case.INSENSITIVE)
@@ -224,7 +226,7 @@ class RelationshipRequiredTest {
                 "ING" to 0L,
                 "test" to 0L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .endsWith(RequiredTestEntityNames.recursiveList().string(), it.key)
@@ -242,7 +244,7 @@ class RelationshipRequiredTest {
                 "ING" to 1L,
                 "test" to 0L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .endsWith(RequiredTestEntityNames.recursiveList().string(), it.key, Case.INSENSITIVE)
@@ -260,7 +262,7 @@ class RelationshipRequiredTest {
                 "String" to 0L,
                 "test" to 0L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .equalTo(RequiredTestEntityNames.recursiveList().string(), it.key)
@@ -278,7 +280,7 @@ class RelationshipRequiredTest {
                 "String" to 1L,
                 "test" to 0L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .equalTo(RequiredTestEntityNames.recursiveList().string(), it.key, Case.INSENSITIVE)
@@ -294,7 +296,7 @@ class RelationshipRequiredTest {
                 //                null to 0L,
                 true to 1L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .equalTo(RequiredTestEntityNames.recursiveList().b(), it.key)
@@ -310,7 +312,7 @@ class RelationshipRequiredTest {
                 //                null to 0L,
                 1.toByte() to 1L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .equalTo(RequiredTestEntityNames.recursiveList().by(), it.key)
@@ -326,7 +328,7 @@ class RelationshipRequiredTest {
                 //                null to 0L,
                 2.toShort() to 1L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .equalTo(RequiredTestEntityNames.recursiveList().sh(), it.key)
@@ -342,7 +344,7 @@ class RelationshipRequiredTest {
                 //                null to 0L,
                 3 to 1L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .equalTo(RequiredTestEntityNames.recursiveList().i(), it.key)
@@ -358,7 +360,7 @@ class RelationshipRequiredTest {
                 //                null to 0L,
                 4L to 1L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .equalTo(RequiredTestEntityNames.recursiveList().l(), it.key)
@@ -374,7 +376,7 @@ class RelationshipRequiredTest {
                 //                null to 0L,
                 5f to 1L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .equalTo(RequiredTestEntityNames.recursiveList().f(), it.key)
@@ -390,7 +392,7 @@ class RelationshipRequiredTest {
                 //                null to 0L,
                 6.0 to 1L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .equalTo(RequiredTestEntityNames.recursiveList().d(), it.key)
@@ -404,9 +406,10 @@ class RelationshipRequiredTest {
     fun equalTo_date() {
         val map = hashMapOf(
                 //                null to 0L,
-                Date() to 1L
+                setupDate!! to 1L,
+                Date() to 0L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .equalTo(RequiredTestEntityNames.recursiveList().date(), it.key)
@@ -423,7 +426,7 @@ class RelationshipRequiredTest {
         val map = hashMapOf(
                 cal.time to 1L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .greaterThan(RequiredTestEntityNames.recursiveList().date(), it.key)
@@ -439,7 +442,7 @@ class RelationshipRequiredTest {
                 0.toByte() to 1L,
                 2.toByte() to 0L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .greaterThan(RequiredTestEntityNames.recursiveList().by(), it.key)
@@ -455,7 +458,7 @@ class RelationshipRequiredTest {
                 0.toShort() to 1L,
                 3.toShort() to 0L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .greaterThan(RequiredTestEntityNames.recursiveList().sh(), it.key)
@@ -472,7 +475,7 @@ class RelationshipRequiredTest {
                 0 to 1L,
                 4 to 0L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .greaterThan(RequiredTestEntityNames.recursiveList().i(), it.key)
@@ -488,7 +491,7 @@ class RelationshipRequiredTest {
                 0L to 1L,
                 5L to 0L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .greaterThan(RequiredTestEntityNames.recursiveList().l(), it.key)
@@ -504,7 +507,7 @@ class RelationshipRequiredTest {
                 0f to 1L,
                 6f to 0L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .greaterThan(RequiredTestEntityNames.recursiveList().f(), it.key)
@@ -520,7 +523,7 @@ class RelationshipRequiredTest {
                 0.0 to 1L,
                 7.0 to 0L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .greaterThan(RequiredTestEntityNames.recursiveList().d(), it.key)
@@ -538,7 +541,7 @@ class RelationshipRequiredTest {
         val map = hashMapOf(
                 cal.time to 1L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .greaterThanOrEqualTo(RequiredTestEntityNames.recursiveList().date(), it.key)
@@ -554,7 +557,7 @@ class RelationshipRequiredTest {
                 0.toByte() to 1L,
                 2.toByte() to 1L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .greaterThanOrEqualTo(RequiredTestEntityNames.recursiveList().by(), it.key)
@@ -570,7 +573,7 @@ class RelationshipRequiredTest {
                 0.toShort() to 1L,
                 3.toShort() to 1L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .greaterThanOrEqualTo(RequiredTestEntityNames.recursiveList().sh(), it.key)
@@ -587,7 +590,7 @@ class RelationshipRequiredTest {
                 0 to 1L,
                 4 to 1L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .greaterThanOrEqualTo(RequiredTestEntityNames.recursiveList().i(), it.key)
@@ -603,7 +606,7 @@ class RelationshipRequiredTest {
                 0L to 1L,
                 5L to 1L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .greaterThanOrEqualTo(RequiredTestEntityNames.recursiveList().l(), it.key)
@@ -619,7 +622,7 @@ class RelationshipRequiredTest {
                 0f to 1L,
                 6f to 1L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .greaterThanOrEqualTo(RequiredTestEntityNames.recursiveList().f(), it.key)
@@ -635,7 +638,7 @@ class RelationshipRequiredTest {
                 0.0 to 1L,
                 7.0 to 1L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .greaterThanOrEqualTo(RequiredTestEntityNames.recursiveList().d(), it.key)
@@ -647,7 +650,7 @@ class RelationshipRequiredTest {
 
     @Test
     fun isEmpty() {
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             val count = realm.where(RequiredTestEntity::class.java)
                     .isEmpty(RequiredTestEntityNames.recursiveList().emptyString())
                     .count()
@@ -657,7 +660,7 @@ class RelationshipRequiredTest {
 
     //    @Test
     //    fun isNull() {
-    //        Realm.getInstance(context).use { realm ->
+    //        Realm.getDefaultInstance().use { realm ->
     //            val count = realm.where(RequiredTestEntity::class.java)
     //                    .isNull(RequiredTestEntityNames.recursiveList().nullString())
     //                    .count()
@@ -667,7 +670,7 @@ class RelationshipRequiredTest {
     //
     //    @Test
     //    fun isNotNull() {
-    //        Realm.getInstance(context).use { realm ->
+    //        Realm.getDefaultInstance().use { realm ->
     //            val count = realm.where(RequiredTestEntity::class.java)
     //                    .isNotNull(RequiredTestEntityNames.recursiveList().nullString())
     //                    .count()
@@ -682,7 +685,7 @@ class RelationshipRequiredTest {
         val map = hashMapOf(
                 cal.time to 0L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .lessThan(RequiredTestEntityNames.recursiveList().date(), it.key)
@@ -698,7 +701,7 @@ class RelationshipRequiredTest {
                 0.toByte() to 0L,
                 2.toByte() to 1L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .lessThan(RequiredTestEntityNames.recursiveList().by(), it.key)
@@ -714,7 +717,7 @@ class RelationshipRequiredTest {
                 0.toShort() to 0L,
                 3.toShort() to 1L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .lessThan(RequiredTestEntityNames.recursiveList().sh(), it.key)
@@ -731,7 +734,7 @@ class RelationshipRequiredTest {
                 0 to 0L,
                 4 to 1L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .lessThan(RequiredTestEntityNames.recursiveList().i(), it.key)
@@ -747,7 +750,7 @@ class RelationshipRequiredTest {
                 0L to 0L,
                 5L to 1L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .lessThan(RequiredTestEntityNames.recursiveList().l(), it.key)
@@ -763,7 +766,7 @@ class RelationshipRequiredTest {
                 0f to 0L,
                 6f to 1L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .lessThan(RequiredTestEntityNames.recursiveList().f(), it.key)
@@ -779,7 +782,7 @@ class RelationshipRequiredTest {
                 0.0 to 0L,
                 7.0 to 1L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .lessThan(RequiredTestEntityNames.recursiveList().d(), it.key)
@@ -797,7 +800,7 @@ class RelationshipRequiredTest {
         val map = hashMapOf(
                 cal.time to 0L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .lessThanOrEqualTo(RequiredTestEntityNames.recursiveList().date(), it.key)
@@ -813,7 +816,7 @@ class RelationshipRequiredTest {
                 0.toByte() to 0L,
                 2.toByte() to 1L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .lessThanOrEqualTo(RequiredTestEntityNames.recursiveList().by(), it.key)
@@ -829,7 +832,7 @@ class RelationshipRequiredTest {
                 0.toShort() to 0L,
                 3.toShort() to 1L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .lessThanOrEqualTo(RequiredTestEntityNames.recursiveList().sh(), it.key)
@@ -846,7 +849,7 @@ class RelationshipRequiredTest {
                 0 to 0L,
                 4 to 1L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .lessThanOrEqualTo(RequiredTestEntityNames.recursiveList().i(), it.key)
@@ -862,7 +865,7 @@ class RelationshipRequiredTest {
                 0L to 0L,
                 5L to 1L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .lessThanOrEqualTo(RequiredTestEntityNames.recursiveList().l(), it.key)
@@ -878,7 +881,7 @@ class RelationshipRequiredTest {
                 0f to 0L,
                 6f to 1L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .lessThanOrEqualTo(RequiredTestEntityNames.recursiveList().f(), it.key)
@@ -894,7 +897,7 @@ class RelationshipRequiredTest {
                 0.0 to 0L,
                 7.0 to 1L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .lessThanOrEqualTo(RequiredTestEntityNames.recursiveList().d(), it.key)
@@ -912,7 +915,7 @@ class RelationshipRequiredTest {
                 "String" to 1L,
                 "test" to 1L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .notEqualTo(RequiredTestEntityNames.recursiveList().string(), it.key)
@@ -932,7 +935,7 @@ class RelationshipRequiredTest {
                 "String" to 1L,
                 "test" to 1L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .notEqualTo(RequiredTestEntityNames.recursiveList().string(), it.key, Case.INSENSITIVE)
@@ -948,7 +951,7 @@ class RelationshipRequiredTest {
                 //                null to 1L,
                 true to 1L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .notEqualTo(RequiredTestEntityNames.recursiveList().b(), it.key)
@@ -964,7 +967,7 @@ class RelationshipRequiredTest {
                 //                null to 1L,
                 1.toByte() to 1L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .notEqualTo(RequiredTestEntityNames.recursiveList().by(), it.key)
@@ -980,7 +983,7 @@ class RelationshipRequiredTest {
                 //                null to 1L,
                 2.toShort() to 1L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .notEqualTo(RequiredTestEntityNames.recursiveList().sh(), it.key)
@@ -996,7 +999,7 @@ class RelationshipRequiredTest {
                 //                null to 1L,
                 3 to 1L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .notEqualTo(RequiredTestEntityNames.recursiveList().i(), it.key)
@@ -1012,7 +1015,7 @@ class RelationshipRequiredTest {
                 //                null to 1L,
                 4L to 1L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .notEqualTo(RequiredTestEntityNames.recursiveList().l(), it.key)
@@ -1028,7 +1031,7 @@ class RelationshipRequiredTest {
                 //                null to 1L,
                 5f to 1L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .notEqualTo(RequiredTestEntityNames.recursiveList().f(), it.key)
@@ -1044,7 +1047,7 @@ class RelationshipRequiredTest {
                 //                null to 1L,
                 6.0 to 1L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .notEqualTo(RequiredTestEntityNames.recursiveList().d(), it.key)
@@ -1058,9 +1061,10 @@ class RelationshipRequiredTest {
     fun notEqualTo_date() {
         val map = hashMapOf(
                 //                null to 1L,
-                Date() to 0L
+                setupDate!! to 0L,
+                Date() to 1L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .notEqualTo(RequiredTestEntityNames.recursiveList().date(), it.key)

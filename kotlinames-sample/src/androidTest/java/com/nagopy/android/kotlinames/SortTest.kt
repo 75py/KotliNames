@@ -34,14 +34,17 @@ class SortTest {
 
     lateinit var context: Context
 
+    var setupDate: Date? = null
+
     fun setup() {
+        setupDate = Date()
         context = InstrumentationRegistry.getTargetContext()
 
-        Realm.deleteRealm(RealmConfiguration.Builder(context).build())
+        Realm.init(context)
 
-        Realm.getInstance(context).use {
+        Realm.getDefaultInstance().use {
             it.executeTransaction {
-                it.where(TestEntity::class.java).findAll().clear()
+                it.where(TestEntity::class.java).findAll().deleteAllFromRealm()
             }
             it.executeTransaction {
                 val test1 = it.createObject(TestEntity::class.java)
@@ -55,7 +58,7 @@ class SortTest {
                 test1.l = 4
                 test1.f = 5.0f
                 test1.d = 6.0
-                test1.date = Date()
+                test1.date = setupDate
             }
             it.executeTransaction {
                 val test2 = it.createObject(TestEntity::class.java)
@@ -69,7 +72,7 @@ class SortTest {
                 test2.l = 5
                 test2.f = 6.0f
                 test2.d = 7.0
-                test2.date = Date()
+                test2.date = setupDate
             }
             it.executeTransaction {
                 val test3 = it.createObject(TestEntity::class.java)
@@ -83,7 +86,7 @@ class SortTest {
                 test3.l = 6
                 test3.f = 7.0f
                 test3.d = 8.0
-                test3.date = Date()
+                test3.date = setupDate
             }
         }
     }
@@ -92,33 +95,36 @@ class SortTest {
     fun sort() {
         setup()
 
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             val result = realm.where(TestEntity::class.java)
                     .contains(TestEntityNames.string(), "string")
                     .findAll()
             Assert.assertThat(result.size, CoreMatchers.`is`(3))
-
-            result.sort(TestEntityNames.string())
             Assert.assertThat(result[0].string, CoreMatchers.`is`("string1"))
             Assert.assertThat(result[1].string, CoreMatchers.`is`("string2"))
             Assert.assertThat(result[2].string, CoreMatchers.`is`("string3"))
 
-            result.sort(TestEntityNames.string(), Sort.DESCENDING)
-            Assert.assertThat(result[0].string, CoreMatchers.`is`("string3"))
-            Assert.assertThat(result[1].string, CoreMatchers.`is`("string2"))
-            Assert.assertThat(result[2].string, CoreMatchers.`is`("string1"))
+            val sortResult1 = result.sort(TestEntityNames.string())
+            Assert.assertThat(sortResult1[0].string, CoreMatchers.`is`("string1"))
+            Assert.assertThat(sortResult1[1].string, CoreMatchers.`is`("string2"))
+            Assert.assertThat(sortResult1[2].string, CoreMatchers.`is`("string3"))
+
+            val sortResult2 = result.sort(TestEntityNames.string(), Sort.DESCENDING)
+            Assert.assertThat(sortResult2[0].string, CoreMatchers.`is`("string3"))
+            Assert.assertThat(sortResult2[1].string, CoreMatchers.`is`("string2"))
+            Assert.assertThat(sortResult2[2].string, CoreMatchers.`is`("string1"))
 
             // by は全て１なので実質stringのみ
-            result.sort(TestEntityNames.by(), Sort.ASCENDING, TestEntityNames.string(), Sort.ASCENDING)
-            Assert.assertThat(result[0].string, CoreMatchers.`is`("string1"))
-            Assert.assertThat(result[1].string, CoreMatchers.`is`("string2"))
-            Assert.assertThat(result[2].string, CoreMatchers.`is`("string3"))
+            val sortResult3 = result.sort(TestEntityNames.by(), Sort.ASCENDING, TestEntityNames.string(), Sort.ASCENDING)
+            Assert.assertThat(sortResult3[0].string, CoreMatchers.`is`("string1"))
+            Assert.assertThat(sortResult3[1].string, CoreMatchers.`is`("string2"))
+            Assert.assertThat(sortResult3[2].string, CoreMatchers.`is`("string3"))
 
             // by, i は全て同じ値
-            result.sort(TestEntityNames.by(), Sort.ASCENDING, TestEntityNames.i(), Sort.ASCENDING, TestEntityNames.sh(), Sort.ASCENDING)
-            Assert.assertThat(result[0].string, CoreMatchers.`is`("string2"))
-            Assert.assertThat(result[1].string, CoreMatchers.`is`("string3"))
-            Assert.assertThat(result[2].string, CoreMatchers.`is`("string1"))
+            val sortResult4 = result.sort(TestEntityNames.by(), Sort.ASCENDING, TestEntityNames.i(), Sort.ASCENDING, TestEntityNames.sh(), Sort.ASCENDING)
+            Assert.assertThat(sortResult4[0].string, CoreMatchers.`is`("string2"))
+            Assert.assertThat(sortResult4[1].string, CoreMatchers.`is`("string3"))
+            Assert.assertThat(sortResult4[2].string, CoreMatchers.`is`("string1"))
         }
     }
 
@@ -126,33 +132,36 @@ class SortTest {
     fun sort_vararg() {
         setup()
 
-        Realm.getInstance(context).use { realm ->
-            val result = realm.where(TestEntity::class.java)
+        Realm.getDefaultInstance().use { realm ->
+            var result = realm.where(TestEntity::class.java)
                     .contains(TestEntityNames.string(), "string")
                     .findAll()
             Assert.assertThat(result.size, CoreMatchers.`is`(3))
-
-            result.sort(TestEntityNames.string() to Sort.ASCENDING)
             Assert.assertThat(result[0].string, CoreMatchers.`is`("string1"))
             Assert.assertThat(result[1].string, CoreMatchers.`is`("string2"))
             Assert.assertThat(result[2].string, CoreMatchers.`is`("string3"))
 
-            result.sort(TestEntityNames.string() to Sort.DESCENDING)
-            Assert.assertThat(result[0].string, CoreMatchers.`is`("string3"))
-            Assert.assertThat(result[1].string, CoreMatchers.`is`("string2"))
-            Assert.assertThat(result[2].string, CoreMatchers.`is`("string1"))
+            val sortResult1 = result.sort(TestEntityNames.string() to Sort.ASCENDING)
+            Assert.assertThat(sortResult1[0].string, CoreMatchers.`is`("string1"))
+            Assert.assertThat(sortResult1[1].string, CoreMatchers.`is`("string2"))
+            Assert.assertThat(sortResult1[2].string, CoreMatchers.`is`("string3"))
+
+            val sortResult2 = result.sort(TestEntityNames.string() to Sort.DESCENDING)
+            Assert.assertThat(sortResult2[0].string, CoreMatchers.`is`("string3"))
+            Assert.assertThat(sortResult2[1].string, CoreMatchers.`is`("string2"))
+            Assert.assertThat(sortResult2[2].string, CoreMatchers.`is`("string1"))
 
             // by は全て１なので実質stringのみ
-            result.sort(TestEntityNames.by() to Sort.ASCENDING, TestEntityNames.string() to Sort.ASCENDING)
-            Assert.assertThat(result[0].string, CoreMatchers.`is`("string1"))
-            Assert.assertThat(result[1].string, CoreMatchers.`is`("string2"))
-            Assert.assertThat(result[2].string, CoreMatchers.`is`("string3"))
+            val sortResult3 = result.sort(TestEntityNames.by() to Sort.ASCENDING, TestEntityNames.string() to Sort.ASCENDING)
+            Assert.assertThat(sortResult3[0].string, CoreMatchers.`is`("string1"))
+            Assert.assertThat(sortResult3[1].string, CoreMatchers.`is`("string2"))
+            Assert.assertThat(sortResult3[2].string, CoreMatchers.`is`("string3"))
 
             // by, i は全て同じ値
-            result.sort(TestEntityNames.by() to Sort.ASCENDING, TestEntityNames.i() to Sort.ASCENDING, TestEntityNames.sh() to Sort.ASCENDING)
-            Assert.assertThat(result[0].string, CoreMatchers.`is`("string2"))
-            Assert.assertThat(result[1].string, CoreMatchers.`is`("string3"))
-            Assert.assertThat(result[2].string, CoreMatchers.`is`("string1"))
+            val sortResult4 = result.sort(TestEntityNames.by() to Sort.ASCENDING, TestEntityNames.i() to Sort.ASCENDING, TestEntityNames.sh() to Sort.ASCENDING)
+            Assert.assertThat(sortResult4[0].string, CoreMatchers.`is`("string2"))
+            Assert.assertThat(sortResult4[1].string, CoreMatchers.`is`("string3"))
+            Assert.assertThat(sortResult4[2].string, CoreMatchers.`is`("string1"))
         }
     }
 
@@ -160,7 +169,7 @@ class SortTest {
     fun RealmQuery_findAllSorted() {
         setup()
 
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             val query = realm.where(TestEntity::class.java)
                     .contains(TestEntityNames.string(), "string")
 
@@ -192,7 +201,7 @@ class SortTest {
     fun RealmQuery_findAllSorted_vararg() {
         setup()
 
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             val query = realm.where(TestEntity::class.java)
                     .contains(TestEntityNames.string(), "string")
 

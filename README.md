@@ -56,7 +56,7 @@ public class CatRelationshipNames {
 
 ```kotlin
 // Usage
-Realm.getInstance(context).use {
+Realm.getDefaultInstance().use {
     it.where(Cat::class.java)
         // Type safe! Cat.name can compare to String type only.
         .equalTo(CatNames.name, "john")
@@ -105,7 +105,7 @@ dependencies {
 * RealmResults&lt;E>.sort(vararg fieldNameArray: Pair&lt;KSortablePropertyName&lt;*>, Boolean>)
 ```kotlin
 // Example
-Realm.getInstance(context).use {
+Realm.getDefaultInstance().use {
     it.where(Cat::class.java)
         .findAllSorted(
             CatNames.age to RealmResults.SORT_ORDER_ASCENDING
