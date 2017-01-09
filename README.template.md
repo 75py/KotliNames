@@ -137,10 +137,12 @@ Supported Realm version: %%realm_version%%
 
 |Kotlin|Realm|KotliNames|
 |---|---|---|
-|-1.0.0-beta-xxxx|-0.85.1|-2.1.1|
-|-1.0.0-beta-xxxx|0.86.0-|3.0.0-|
-|1.0.0-rc-1036|0.86.0-|4.0.0-|
+|1.0.6|2.2.2|6.0.0|
+|-|1.x|Not supported|
 |1.0.0|0.86.0-|5.0.0-|
+|1.0.0-rc-1036|0.86.0-|4.0.0-|
+|-1.0.0-beta-xxxx|0.86.0-|3.0.0-|
+|-1.0.0-beta-xxxx|-0.85.1|-2.1.1|
 
 
 ## License
