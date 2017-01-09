@@ -3,8 +3,9 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.0.0-beta6'
+        classpath 'com.android.tools.build:gradle:2.2.3'
         classpath 'com.novoda:bintray-release:0.3.4'
+        classpath "io.realm:realm-gradle-plugin:2.2.2"
     }
 }
 
@@ -21,10 +22,10 @@ task clean(type: Delete) {
 ext {
     publish_version_name = versionName()
     publish_version_code = versionCode()
-    kotlin_version = '1.0.0'
-    realm_version = '0.87.5'
-    compile_sdk_version = 23
-    build_tool_version = "23.0.1"
+    kotlin_version = '1.0.6'
+    realm_version = '2.2.2'
+    compile_sdk_version = 25
+    build_tool_version = "25.0.2"
 }
 
 task bumpMajor << {

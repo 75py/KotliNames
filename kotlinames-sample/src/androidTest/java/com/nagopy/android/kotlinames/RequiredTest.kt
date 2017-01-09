@@ -22,7 +22,6 @@ import android.support.test.runner.AndroidJUnit4
 import com.nagopy.android.kotlinames.names.RequiredTestEntityNames
 import io.realm.Case
 import io.realm.Realm
-import io.realm.RealmConfiguration
 import org.hamcrest.CoreMatchers
 import org.junit.Assert
 import org.junit.Before
@@ -35,15 +34,18 @@ class RequiredTest {
 
     lateinit var context: Context
 
+    var setupDate: Date? = null
+
     @Before
     fun setup() {
+        setupDate = Date()
         context = InstrumentationRegistry.getTargetContext()
 
-        Realm.deleteRealm(RealmConfiguration.Builder(context).build())
+        Realm.init(context)
 
-        Realm.getInstance(context).use {
+        Realm.getDefaultInstance().use {
             it.executeTransaction {
-                it.where(RequiredTestEntity::class.java).findAll().clear()
+                it.where(RequiredTestEntity::class.java).findAll().deleteAllFromRealm()
             }
             it.executeTransaction {
                 val test1 = it.createObject(RequiredTestEntity::class.java)
@@ -56,7 +58,7 @@ class RequiredTest {
                 test1.l = 4
                 test1.f = 5.0f
                 test1.d = 6.0
-                test1.date = Date()
+                test1.date = setupDate
             }
             it.executeTransaction {
                 val test2 = it.createObject(RequiredTestEntity::class.java)
@@ -69,14 +71,14 @@ class RequiredTest {
                 test2.l = 5
                 test2.f = 6.0f
                 test2.d = 7.0
-                test2.date = Date()
+                test2.date = setupDate
             }
         }
     }
 
     @Test
     fun average_byte() {
-        Realm.getInstance(context).use {
+        Realm.getDefaultInstance().use {
             val avg = it.where(RequiredTestEntity::class.java).average(RequiredTestEntityNames.by())
             Assert.assertThat(avg, CoreMatchers.`is`(1.5))
         }
@@ -84,7 +86,7 @@ class RequiredTest {
 
     @Test
     fun average_short() {
-        Realm.getInstance(context).use {
+        Realm.getDefaultInstance().use {
             val avg = it.where(RequiredTestEntity::class.java).average(RequiredTestEntityNames.sh())
             Assert.assertThat(avg, CoreMatchers.`is`(2.5))
         }
@@ -92,7 +94,7 @@ class RequiredTest {
 
     @Test
     fun average_int() {
-        Realm.getInstance(context).use {
+        Realm.getDefaultInstance().use {
             val avg = it.where(RequiredTestEntity::class.java).average(RequiredTestEntityNames.i())
             Assert.assertThat(avg, CoreMatchers.`is`(3.5))
         }
@@ -100,7 +102,7 @@ class RequiredTest {
 
     @Test
     fun average_long() {
-        Realm.getInstance(context).use {
+        Realm.getDefaultInstance().use {
             val avg = it.where(RequiredTestEntity::class.java).average(RequiredTestEntityNames.l())
             Assert.assertThat(avg, CoreMatchers.`is`(4.5))
         }
@@ -108,7 +110,7 @@ class RequiredTest {
 
     @Test
     fun average_float() {
-        Realm.getInstance(context).use {
+        Realm.getDefaultInstance().use {
             val avg = it.where(RequiredTestEntity::class.java).average(RequiredTestEntityNames.f())
             Assert.assertThat(avg, CoreMatchers.`is`(5.5))
         }
@@ -116,7 +118,7 @@ class RequiredTest {
 
     @Test
     fun average_double() {
-        Realm.getInstance(context).use {
+        Realm.getDefaultInstance().use {
             val avg = it.where(RequiredTestEntity::class.java).average(RequiredTestEntityNames.d())
             Assert.assertThat(avg, CoreMatchers.`is`(6.5))
         }
@@ -130,7 +132,7 @@ class RequiredTest {
                 "Str" to 0L,
                 "test" to 0L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .beginsWith(RequiredTestEntityNames.string(), it.key)
@@ -148,7 +150,7 @@ class RequiredTest {
                 "Str" to 2L,
                 "test" to 0L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .beginsWith(RequiredTestEntityNames.string(), it.key, Case.INSENSITIVE)
@@ -160,7 +162,7 @@ class RequiredTest {
 
     @Test
     fun between_date() {
-        Realm.getInstance(context).use {
+        Realm.getDefaultInstance().use {
             val calendar = Calendar.getInstance()
             calendar.add(Calendar.DATE, 1)
             val count = it.where(RequiredTestEntity::class.java).between(RequiredTestEntityNames.date(), calendar.time, calendar.time).count()
@@ -170,7 +172,7 @@ class RequiredTest {
 
     @Test
     fun between_byte() {
-        Realm.getInstance(context).use {
+        Realm.getDefaultInstance().use {
             val count = it.where(RequiredTestEntity::class.java).between(RequiredTestEntityNames.by(), 2, 3).count()
             Assert.assertThat(count, CoreMatchers.`is`(1L))
         }
@@ -178,7 +180,7 @@ class RequiredTest {
 
     @Test
     fun between_short() {
-        Realm.getInstance(context).use {
+        Realm.getDefaultInstance().use {
             val count = it.where(RequiredTestEntity::class.java).between(RequiredTestEntityNames.sh(), 3, 4).count()
             Assert.assertThat(count, CoreMatchers.`is`(1L))
         }
@@ -186,7 +188,7 @@ class RequiredTest {
 
     @Test
     fun between_int() {
-        Realm.getInstance(context).use {
+        Realm.getDefaultInstance().use {
             val count = it.where(RequiredTestEntity::class.java).between(RequiredTestEntityNames.i(), 4, 5).count()
             Assert.assertThat(count, CoreMatchers.`is`(1L))
         }
@@ -194,7 +196,7 @@ class RequiredTest {
 
     @Test
     fun between_long() {
-        Realm.getInstance(context).use {
+        Realm.getDefaultInstance().use {
             val count = it.where(RequiredTestEntity::class.java).between(RequiredTestEntityNames.l(), 5, 6).count()
             Assert.assertThat(count, CoreMatchers.`is`(1L))
         }
@@ -202,7 +204,7 @@ class RequiredTest {
 
     @Test
     fun between_float() {
-        Realm.getInstance(context).use {
+        Realm.getDefaultInstance().use {
             val count = it.where(RequiredTestEntity::class.java).between(RequiredTestEntityNames.f(), 6f, 7f).count()
             Assert.assertThat(count, CoreMatchers.`is`(1L))
         }
@@ -210,7 +212,7 @@ class RequiredTest {
 
     @Test
     fun between_double() {
-        Realm.getInstance(context).use {
+        Realm.getDefaultInstance().use {
             val count = it.where(RequiredTestEntity::class.java).between(RequiredTestEntityNames.d(), 7.0, 8.0).count()
             Assert.assertThat(count, CoreMatchers.`is`(1L))
         }
@@ -224,7 +226,7 @@ class RequiredTest {
                 "Str" to 0L,
                 "test" to 0L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .contains(RequiredTestEntityNames.string(), it.key)
@@ -242,7 +244,7 @@ class RequiredTest {
                 "Str" to 2L,
                 "test" to 0L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .contains(RequiredTestEntityNames.string(), it.key, Case.INSENSITIVE)
@@ -260,7 +262,7 @@ class RequiredTest {
                 "ING" to 0L,
                 "test" to 0L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .endsWith(RequiredTestEntityNames.string(), it.key)
@@ -278,7 +280,7 @@ class RequiredTest {
                 "ING" to 1L,
                 "test" to 0L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .endsWith(RequiredTestEntityNames.string(), it.key, Case.INSENSITIVE)
@@ -296,7 +298,7 @@ class RequiredTest {
                 "String" to 0L,
                 "test" to 0L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .equalTo(RequiredTestEntityNames.string(), it.key)
@@ -314,7 +316,7 @@ class RequiredTest {
                 "String" to 1L,
                 "test" to 0L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .equalTo(RequiredTestEntityNames.string(), it.key, Case.INSENSITIVE)
@@ -330,7 +332,7 @@ class RequiredTest {
                 //                null to 0L,
                 true to 1L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .equalTo(RequiredTestEntityNames.b(), it.key)
@@ -346,7 +348,7 @@ class RequiredTest {
                 //                null to 0L,
                 1.toByte() to 1L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .equalTo(RequiredTestEntityNames.by(), it.key)
@@ -362,7 +364,7 @@ class RequiredTest {
                 //                null to 0L,
                 2.toShort() to 1L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .equalTo(RequiredTestEntityNames.sh(), it.key)
@@ -378,7 +380,7 @@ class RequiredTest {
                 //                null to 0L,
                 3 to 1L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .equalTo(RequiredTestEntityNames.i(), it.key)
@@ -394,7 +396,7 @@ class RequiredTest {
                 //                null to 0L,
                 4L to 1L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .equalTo(RequiredTestEntityNames.l(), it.key)
@@ -410,7 +412,7 @@ class RequiredTest {
                 //                null to 0L,
                 5f to 1L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .equalTo(RequiredTestEntityNames.f(), it.key)
@@ -426,7 +428,7 @@ class RequiredTest {
                 //                null to 0L,
                 6.0 to 1L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .equalTo(RequiredTestEntityNames.d(), it.key)
@@ -440,9 +442,10 @@ class RequiredTest {
     fun equalTo_date() {
         val map = hashMapOf(
                 //                null to 0L,
-                Date() to 2L
+                setupDate!! to 2L,
+                Date() to 0L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .equalTo(RequiredTestEntityNames.date(), it.key)
@@ -459,7 +462,7 @@ class RequiredTest {
         val map = hashMapOf(
                 cal.time to 2L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .greaterThan(RequiredTestEntityNames.date(), it.key)
@@ -475,7 +478,7 @@ class RequiredTest {
                 0.toByte() to 2L,
                 2.toByte() to 0L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .greaterThan(RequiredTestEntityNames.by(), it.key)
@@ -491,7 +494,7 @@ class RequiredTest {
                 0.toShort() to 2L,
                 3.toShort() to 0L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .greaterThan(RequiredTestEntityNames.sh(), it.key)
@@ -508,7 +511,7 @@ class RequiredTest {
                 0 to 2L,
                 4 to 0L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .greaterThan(RequiredTestEntityNames.i(), it.key)
@@ -524,7 +527,7 @@ class RequiredTest {
                 0L to 2L,
                 5L to 0L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .greaterThan(RequiredTestEntityNames.l(), it.key)
@@ -540,7 +543,7 @@ class RequiredTest {
                 0f to 2L,
                 6f to 0L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .greaterThan(RequiredTestEntityNames.f(), it.key)
@@ -556,7 +559,7 @@ class RequiredTest {
                 0.0 to 2L,
                 7.0 to 0L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .greaterThan(RequiredTestEntityNames.d(), it.key)
@@ -574,7 +577,7 @@ class RequiredTest {
         val map = hashMapOf(
                 cal.time to 2L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .greaterThanOrEqualTo(RequiredTestEntityNames.date(), it.key)
@@ -590,7 +593,7 @@ class RequiredTest {
                 0.toByte() to 2L,
                 2.toByte() to 1L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .greaterThanOrEqualTo(RequiredTestEntityNames.by(), it.key)
@@ -606,7 +609,7 @@ class RequiredTest {
                 0.toShort() to 2L,
                 3.toShort() to 1L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .greaterThanOrEqualTo(RequiredTestEntityNames.sh(), it.key)
@@ -623,7 +626,7 @@ class RequiredTest {
                 0 to 2L,
                 4 to 1L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .greaterThanOrEqualTo(RequiredTestEntityNames.i(), it.key)
@@ -639,7 +642,7 @@ class RequiredTest {
                 0L to 2L,
                 5L to 1L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .greaterThanOrEqualTo(RequiredTestEntityNames.l(), it.key)
@@ -655,7 +658,7 @@ class RequiredTest {
                 0f to 2L,
                 6f to 1L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .greaterThanOrEqualTo(RequiredTestEntityNames.f(), it.key)
@@ -671,7 +674,7 @@ class RequiredTest {
                 0.0 to 2L,
                 7.0 to 1L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .greaterThanOrEqualTo(RequiredTestEntityNames.d(), it.key)
@@ -683,7 +686,7 @@ class RequiredTest {
 
     @Test
     fun isEmpty() {
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             val count = realm.where(RequiredTestEntity::class.java)
                     .isEmpty(RequiredTestEntityNames.emptyString())
                     .count()
@@ -693,7 +696,7 @@ class RequiredTest {
 
     //    @Test
     //    fun isNull() {
-    //        Realm.getInstance(context).use { realm ->
+    //        Realm.getDefaultInstance().use { realm ->
     //            val count = realm.where(RequiredTestEntity::class.java)
     //                    .isNull(RequiredTestEntityNames.string())
     //                    .count()
@@ -703,7 +706,7 @@ class RequiredTest {
     //
     //    @Test
     //    fun isNotNull() {
-    //        Realm.getInstance(context).use { realm ->
+    //        Realm.getDefaultInstance().use { realm ->
     //            val count = realm.where(RequiredTestEntity::class.java)
     //                    .isNotNull(RequiredTestEntityNames.string())
     //                    .count()
@@ -718,7 +721,7 @@ class RequiredTest {
         val map = hashMapOf(
                 cal.time to 0L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .lessThan(RequiredTestEntityNames.date(), it.key)
@@ -734,7 +737,7 @@ class RequiredTest {
                 0.toByte() to 0L,
                 2.toByte() to 1L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .lessThan(RequiredTestEntityNames.by(), it.key)
@@ -750,7 +753,7 @@ class RequiredTest {
                 0.toShort() to 0L,
                 3.toShort() to 1L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .lessThan(RequiredTestEntityNames.sh(), it.key)
@@ -767,7 +770,7 @@ class RequiredTest {
                 0 to 0L,
                 4 to 1L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .lessThan(RequiredTestEntityNames.i(), it.key)
@@ -783,7 +786,7 @@ class RequiredTest {
                 0L to 0L,
                 5L to 1L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .lessThan(RequiredTestEntityNames.l(), it.key)
@@ -799,7 +802,7 @@ class RequiredTest {
                 0f to 0L,
                 6f to 1L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .lessThan(RequiredTestEntityNames.f(), it.key)
@@ -815,7 +818,7 @@ class RequiredTest {
                 0.0 to 0L,
                 7.0 to 1L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .lessThan(RequiredTestEntityNames.d(), it.key)
@@ -833,7 +836,7 @@ class RequiredTest {
         val map = hashMapOf(
                 cal.time to 0L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .lessThanOrEqualTo(RequiredTestEntityNames.date(), it.key)
@@ -849,7 +852,7 @@ class RequiredTest {
                 0.toByte() to 0L,
                 2.toByte() to 2L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .lessThanOrEqualTo(RequiredTestEntityNames.by(), it.key)
@@ -865,7 +868,7 @@ class RequiredTest {
                 0.toShort() to 0L,
                 3.toShort() to 2L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .lessThanOrEqualTo(RequiredTestEntityNames.sh(), it.key)
@@ -882,7 +885,7 @@ class RequiredTest {
                 0 to 0L,
                 4 to 2L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .lessThanOrEqualTo(RequiredTestEntityNames.i(), it.key)
@@ -898,7 +901,7 @@ class RequiredTest {
                 0L to 0L,
                 5L to 2L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .lessThanOrEqualTo(RequiredTestEntityNames.l(), it.key)
@@ -914,7 +917,7 @@ class RequiredTest {
                 0f to 0L,
                 6f to 2L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .lessThanOrEqualTo(RequiredTestEntityNames.f(), it.key)
@@ -930,7 +933,7 @@ class RequiredTest {
                 0.0 to 0L,
                 7.0 to 2L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .lessThanOrEqualTo(RequiredTestEntityNames.d(), it.key)
@@ -942,7 +945,7 @@ class RequiredTest {
 
     @Test
     fun maximumDate() {
-        Realm.getInstance(context).use {
+        Realm.getDefaultInstance().use {
             val max = it.where(RequiredTestEntity::class.java).maximumDate(RequiredTestEntityNames.date())
             Assert.assertThat(max, CoreMatchers.notNullValue())
         }
@@ -950,7 +953,7 @@ class RequiredTest {
 
     @Test
     fun max_byte() {
-        Realm.getInstance(context).use {
+        Realm.getDefaultInstance().use {
             val max = it.where(RequiredTestEntity::class.java).max(RequiredTestEntityNames.by())
             Assert.assertThat(max.toByte(), CoreMatchers.`is`(2.toByte()))
         }
@@ -958,7 +961,7 @@ class RequiredTest {
 
     @Test
     fun max_short() {
-        Realm.getInstance(context).use {
+        Realm.getDefaultInstance().use {
             val max = it.where(RequiredTestEntity::class.java).max(RequiredTestEntityNames.sh())
             Assert.assertThat(max.toShort(), CoreMatchers.`is`(3.toShort()))
         }
@@ -966,7 +969,7 @@ class RequiredTest {
 
     @Test
     fun max_int() {
-        Realm.getInstance(context).use {
+        Realm.getDefaultInstance().use {
             val max = it.where(RequiredTestEntity::class.java).max(RequiredTestEntityNames.i())
             Assert.assertThat(max.toInt(), CoreMatchers.`is`(4.toInt()))
         }
@@ -974,7 +977,7 @@ class RequiredTest {
 
     @Test
     fun max_long() {
-        Realm.getInstance(context).use {
+        Realm.getDefaultInstance().use {
             val max = it.where(RequiredTestEntity::class.java).max(RequiredTestEntityNames.l())
             Assert.assertThat(max.toLong(), CoreMatchers.`is`(5.toLong()))
         }
@@ -982,7 +985,7 @@ class RequiredTest {
 
     @Test
     fun max_float() {
-        Realm.getInstance(context).use {
+        Realm.getDefaultInstance().use {
             val max = it.where(RequiredTestEntity::class.java).max(RequiredTestEntityNames.f())
             Assert.assertThat(max.toFloat(), CoreMatchers.`is`(6.toFloat()))
         }
@@ -990,7 +993,7 @@ class RequiredTest {
 
     @Test
     fun max_double() {
-        Realm.getInstance(context).use {
+        Realm.getDefaultInstance().use {
             val max = it.where(RequiredTestEntity::class.java).max(RequiredTestEntityNames.d())
             Assert.assertThat(max.toDouble(), CoreMatchers.`is`(7.toDouble()))
         }
@@ -999,7 +1002,7 @@ class RequiredTest {
 
     @Test
     fun minimumDate() {
-        Realm.getInstance(context).use {
+        Realm.getDefaultInstance().use {
             val min = it.where(RequiredTestEntity::class.java).minimumDate(RequiredTestEntityNames.date())
             Assert.assertThat(min, CoreMatchers.notNullValue())
         }
@@ -1007,7 +1010,7 @@ class RequiredTest {
 
     @Test
     fun min_byte() {
-        Realm.getInstance(context).use {
+        Realm.getDefaultInstance().use {
             val min = it.where(RequiredTestEntity::class.java).min(RequiredTestEntityNames.by())
             Assert.assertThat(min.toByte(), CoreMatchers.`is`(1.toByte()))
         }
@@ -1015,7 +1018,7 @@ class RequiredTest {
 
     @Test
     fun min_short() {
-        Realm.getInstance(context).use {
+        Realm.getDefaultInstance().use {
             val min = it.where(RequiredTestEntity::class.java).min(RequiredTestEntityNames.sh())
             Assert.assertThat(min.toShort(), CoreMatchers.`is`(2.toShort()))
         }
@@ -1023,7 +1026,7 @@ class RequiredTest {
 
     @Test
     fun min_int() {
-        Realm.getInstance(context).use {
+        Realm.getDefaultInstance().use {
             val min = it.where(RequiredTestEntity::class.java).min(RequiredTestEntityNames.i())
             Assert.assertThat(min.toInt(), CoreMatchers.`is`(3.toInt()))
         }
@@ -1031,7 +1034,7 @@ class RequiredTest {
 
     @Test
     fun min_long() {
-        Realm.getInstance(context).use {
+        Realm.getDefaultInstance().use {
             val min = it.where(RequiredTestEntity::class.java).min(RequiredTestEntityNames.l())
             Assert.assertThat(min.toLong(), CoreMatchers.`is`(4.toLong()))
         }
@@ -1039,7 +1042,7 @@ class RequiredTest {
 
     @Test
     fun min_float() {
-        Realm.getInstance(context).use {
+        Realm.getDefaultInstance().use {
             val min = it.where(RequiredTestEntity::class.java).min(RequiredTestEntityNames.f())
             Assert.assertThat(min.toFloat(), CoreMatchers.`is`(5.toFloat()))
         }
@@ -1047,7 +1050,7 @@ class RequiredTest {
 
     @Test
     fun min_double() {
-        Realm.getInstance(context).use {
+        Realm.getDefaultInstance().use {
             val min = it.where(RequiredTestEntity::class.java).min(RequiredTestEntityNames.d())
             Assert.assertThat(min.toDouble(), CoreMatchers.`is`(6.toDouble()))
         }
@@ -1057,12 +1060,12 @@ class RequiredTest {
     @Test
     fun notEqualTo_string() {
         val map = hashMapOf(
-//                null to 2L,
+                //                null to 2L,
                 "string" to 1L,
                 "String" to 2L,
                 "test" to 2L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .notEqualTo(RequiredTestEntityNames.string(), it.key)
@@ -1075,12 +1078,12 @@ class RequiredTest {
     @Test
     fun notEqualTo_string_ignore_case() {
         val map = hashMapOf(
-//                null to 2L,
+                //                null to 2L,
                 "string" to 1L,
                 "String" to 1L,
                 "test" to 2L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .notEqualTo(RequiredTestEntityNames.string(), it.key, Case.INSENSITIVE)
@@ -1093,10 +1096,10 @@ class RequiredTest {
     @Test
     fun notEqualTo_boolean() {
         val map = hashMapOf(
-//                null to 2L,
+                //                null to 2L,
                 true to 1L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .notEqualTo(RequiredTestEntityNames.b(), it.key)
@@ -1109,10 +1112,10 @@ class RequiredTest {
     @Test
     fun notEqualTo_byte() {
         val map = hashMapOf(
-//                null to 2L,
+                //                null to 2L,
                 1.toByte() to 1L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .notEqualTo(RequiredTestEntityNames.by(), it.key)
@@ -1125,10 +1128,10 @@ class RequiredTest {
     @Test
     fun notEqualTo_short() {
         val map = hashMapOf(
-//                null to 2L,
+                //                null to 2L,
                 2.toShort() to 1L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .notEqualTo(RequiredTestEntityNames.sh(), it.key)
@@ -1141,10 +1144,10 @@ class RequiredTest {
     @Test
     fun notEqualTo_int() {
         val map = hashMapOf(
-//                null to 2L,
+                //                null to 2L,
                 3 to 1L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .notEqualTo(RequiredTestEntityNames.i(), it.key)
@@ -1157,10 +1160,10 @@ class RequiredTest {
     @Test
     fun notEqualTo_long() {
         val map = hashMapOf(
-//                null to 2L,
+                //                null to 2L,
                 4L to 1L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .notEqualTo(RequiredTestEntityNames.l(), it.key)
@@ -1173,10 +1176,10 @@ class RequiredTest {
     @Test
     fun notEqualTo_float() {
         val map = hashMapOf(
-//                null to 2L,
+                //                null to 2L,
                 5f to 1L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .notEqualTo(RequiredTestEntityNames.f(), it.key)
@@ -1189,10 +1192,10 @@ class RequiredTest {
     @Test
     fun notEqualTo_double() {
         val map = hashMapOf(
-//                null to 2L,
+                //                null to 2L,
                 6.0 to 1L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .notEqualTo(RequiredTestEntityNames.d(), it.key)
@@ -1205,10 +1208,11 @@ class RequiredTest {
     @Test
     fun notEqualTo_date() {
         val map = hashMapOf(
-//                null to 2L,
-                Date() to 0L
+                //                null to 2L,
+                setupDate!! to 0L,
+                Date() to 2L
         )
-        Realm.getInstance(context).use { realm ->
+        Realm.getDefaultInstance().use { realm ->
             map.forEach {
                 val count = realm.where(RequiredTestEntity::class.java)
                         .notEqualTo(RequiredTestEntityNames.date(), it.key)
@@ -1221,7 +1225,7 @@ class RequiredTest {
 
     @Test
     fun sum_byte() {
-        Realm.getInstance(context).use {
+        Realm.getDefaultInstance().use {
             val avg = it.where(RequiredTestEntity::class.java).sum(RequiredTestEntityNames.by())
             Assert.assertThat(avg.toDouble(), CoreMatchers.`is`(3.0))
         }
@@ -1229,7 +1233,7 @@ class RequiredTest {
 
     @Test
     fun sum_short() {
-        Realm.getInstance(context).use {
+        Realm.getDefaultInstance().use {
             val avg = it.where(RequiredTestEntity::class.java).sum(RequiredTestEntityNames.sh())
             Assert.assertThat(avg.toDouble(), CoreMatchers.`is`(5.0))
         }
@@ -1237,7 +1241,7 @@ class RequiredTest {
 
     @Test
     fun sum_int() {
-        Realm.getInstance(context).use {
+        Realm.getDefaultInstance().use {
             val avg = it.where(RequiredTestEntity::class.java).sum(RequiredTestEntityNames.i())
             Assert.assertThat(avg.toDouble(), CoreMatchers.`is`(7.0))
         }
@@ -1245,7 +1249,7 @@ class RequiredTest {
 
     @Test
     fun sum_long() {
-        Realm.getInstance(context).use {
+        Realm.getDefaultInstance().use {
             val avg = it.where(RequiredTestEntity::class.java).sum(RequiredTestEntityNames.l())
             Assert.assertThat(avg.toDouble(), CoreMatchers.`is`(9.0))
         }
@@ -1253,7 +1257,7 @@ class RequiredTest {
 
     @Test
     fun sum_float() {
-        Realm.getInstance(context).use {
+        Realm.getDefaultInstance().use {
             val avg = it.where(RequiredTestEntity::class.java).sum(RequiredTestEntityNames.f())
             Assert.assertThat(avg.toDouble(), CoreMatchers.`is`(11.0))
         }
@@ -1261,7 +1265,7 @@ class RequiredTest {
 
     @Test
     fun sum_double() {
-        Realm.getInstance(context).use {
+        Realm.getDefaultInstance().use {
             val avg = it.where(RequiredTestEntity::class.java).sum(RequiredTestEntityNames.d())
             Assert.assertThat(avg.toDouble(), CoreMatchers.`is`(13.0))
         }
@@ -1270,7 +1274,7 @@ class RequiredTest {
     /*
     @Test(expected = IllegalArgumentException::class)
     fun equalTo_string_number() {
-        Realm.getInstance(context).use {
+        Realm.getDefaultInstance().use {
             val count = it.where(RequiredTestEntity::class.java)
                     .equalTo("string", 1)
                     .count()
@@ -1281,7 +1285,7 @@ class RequiredTest {
 
     @Test(expected = IllegalArgumentException::class)
     fun equalTo_string_boolean() {
-        Realm.getInstance(context).use {
+        Realm.getDefaultInstance().use {
             val count = it.where(RequiredTestEntity::class.java)
                     .equalTo("string", false)
                     .count()
@@ -1292,7 +1296,7 @@ class RequiredTest {
 
     @Test
     fun equalTo_boolean() {
-        Realm.getInstance(context).use {
+        Realm.getDefaultInstance().use {
             val count = it.where(RequiredTestEntity::class.java)
                     .equalTo(RequiredTestEntityNames.b(), false) // TypeSafe!
                     .count()
@@ -1302,7 +1306,7 @@ class RequiredTest {
 
     @Test(expected = IllegalArgumentException::class)
     fun equalTo_boolean_number() {
-        Realm.getInstance(context).use {
+        Realm.getDefaultInstance().use {
             val count = it.where(RequiredTestEntity::class.java)
                     .equalTo("b", 1)
                     .count()
@@ -1313,7 +1317,7 @@ class RequiredTest {
 
     @Test(expected = IllegalArgumentException::class)
     fun equalTo_boolean_string() {
-        Realm.getInstance(context).use {
+        Realm.getDefaultInstance().use {
             val count = it.where(RequiredTestEntity::class.java)
                     .equalTo("b", "false")
                     .count()

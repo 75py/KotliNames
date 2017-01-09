@@ -78,7 +78,7 @@ fun <E : RealmObject> RealmQuery<E>.equalTo(fieldName: KRequiredPropertyName<Str
 fun <E : RealmObject> RealmQuery<E>.findAllSorted(fieldName: KSortablePropertyName<*>): RealmResults<E> = findAllSorted(fieldName.name())
 fun <E : RealmObject> RealmQuery<E>.findAllSorted(fieldName: KSortablePropertyName<*>, sortOrder: Sort): RealmResults<E> = findAllSorted(fieldName.name(), sortOrder)
 fun <E : RealmObject> RealmQuery<E>.findAllSorted(name1: KSortablePropertyName<*>, sortOrder1: Sort, name2: KSortablePropertyName<*>, sortOrder2: Sort): RealmResults<E> = findAllSorted(name1.name(), sortOrder1, name2.name(), sortOrder2)
-fun <E : RealmObject> RealmQuery<E>.findAllSorted(name1: KSortablePropertyName<*>, sortOrder1: Sort, name2: KSortablePropertyName<*>, sortOrder2: Sort, name3: KSortablePropertyName<*>, sortOrder3: Sort): RealmResults<E> = findAllSorted(name1.name(), sortOrder1, name2.name(), sortOrder2, name3.name(), sortOrder3)
+fun <E : RealmObject> RealmQuery<E>.findAllSorted(name1: KSortablePropertyName<*>, sortOrder1: Sort, name2: KSortablePropertyName<*>, sortOrder2: Sort, name3: KSortablePropertyName<*>, sortOrder3: Sort): RealmResults<E> = findAllSorted(arrayOf(name1.name(), name2.name(), name3.name()), arrayOf(sortOrder1, sortOrder2, sortOrder3))
 fun <E : RealmObject> RealmQuery<E>.findAllSorted(vararg fieldNameArray: Pair<KSortablePropertyName<*>, Sort>): RealmResults<E> {
     val fieldNames = fieldNameArray.map { it.first.name() }.toTypedArray()
     val sortOrder = fieldNameArray.map { it.second }.toTypedArray()
@@ -88,7 +88,7 @@ fun <E : RealmObject> RealmQuery<E>.findAllSorted(vararg fieldNameArray: Pair<KS
 fun <E : RealmObject> RealmQuery<E>.findAllSortedAsync(fieldName: KSortablePropertyName<*>): RealmResults<E> = findAllSortedAsync(fieldName.name())
 fun <E : RealmObject> RealmQuery<E>.findAllSortedAsync(fieldName: KSortablePropertyName<*>, sortOrder: Sort): RealmResults<E> = findAllSortedAsync(fieldName.name(), sortOrder)
 fun <E : RealmObject> RealmQuery<E>.findAllSortedAsync(name1: KSortablePropertyName<*>, sortOrder1: Sort, name2: KSortablePropertyName<*>, sortOrder2: Sort): RealmResults<E> = findAllSortedAsync(name1.name(), sortOrder1, name2.name(), sortOrder2)
-fun <E : RealmObject> RealmQuery<E>.findAllSortedAsync(name1: KSortablePropertyName<*>, sortOrder1: Sort, name2: KSortablePropertyName<*>, sortOrder2: Sort, name3: KSortablePropertyName<*>, sortOrder3: Sort): RealmResults<E> = findAllSortedAsync(name1.name(), sortOrder1, name2.name(), sortOrder2, name3.name(), sortOrder3)
+fun <E : RealmObject> RealmQuery<E>.findAllSortedAsync(name1: KSortablePropertyName<*>, sortOrder1: Sort, name2: KSortablePropertyName<*>, sortOrder2: Sort, name3: KSortablePropertyName<*>, sortOrder3: Sort): RealmResults<E> = findAllSortedAsync(arrayOf(name1.name(), name2.name(), name3.name()), arrayOf(sortOrder1, sortOrder2, sortOrder3))
 fun <E : RealmObject> RealmQuery<E>.findAllSortedAsync(vararg fieldNameArray: Pair<KSortablePropertyName<*>, Sort>): RealmResults<E> {
     val fieldNames = fieldNameArray.map { it.first.name() }.toTypedArray()
     val sortOrder = fieldNameArray.map { it.second }.toTypedArray()
@@ -169,9 +169,9 @@ fun <E : RealmObject> RealmResults<E>.sort(fieldName: KSortablePropertyName<*>) 
 
 fun <E : RealmObject> RealmResults<E>.sort(fieldName: KSortablePropertyName<*>, sortOrder: io.realm.Sort) = sort(fieldName.name(), sortOrder)
 fun <E : RealmObject> RealmResults<E>.sort(name1: KSortablePropertyName<*>, sortOrder1: Sort, name2: KSortablePropertyName<*>, sortOrder2: Sort) = sort(name1.name(), sortOrder1, name2.name(), sortOrder2)
-fun <E : RealmObject> RealmResults<E>.sort(name1: KSortablePropertyName<*>, sortOrder1: Sort, name2: KSortablePropertyName<*>, sortOrder2: Sort, name3: KSortablePropertyName<*>, sortOrder3: Sort) = sort(name1.name(), sortOrder1, name2.name(), sortOrder2, name3.name(), sortOrder3)
-fun <E : RealmObject> RealmResults<E>.sort(vararg fieldNameArray: Pair<KSortablePropertyName<*>, Sort>) {
+fun <E : RealmObject> RealmResults<E>.sort(name1: KSortablePropertyName<*>, sortOrder1: Sort, name2: KSortablePropertyName<*>, sortOrder2: Sort, name3: KSortablePropertyName<*>, sortOrder3: Sort) = sort(arrayOf(name1.name(), name2.name(), name3.name()), arrayOf(sortOrder1, sortOrder2, sortOrder3))
+fun <E : RealmObject> RealmResults<E>.sort(vararg fieldNameArray: Pair<KSortablePropertyName<*>, Sort>) : RealmResults<E> {
     val fieldNames = fieldNameArray.map { it.first.name() }.toTypedArray()
     val sortOrder = fieldNameArray.map { it.second }.toTypedArray()
-    sort(fieldNames, sortOrder)
+    return sort(fieldNames, sortOrder)
 }

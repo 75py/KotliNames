@@ -48,7 +48,6 @@ import javax.tools.Diagnostic;
 import io.realm.annotations.Ignore;
 import io.realm.annotations.RealmClass;
 import io.realm.annotations.Required;
-import io.realm.internal.RealmObjectProxy;
 
 @AutoService(Processor.class)
 public class KotliNamesProcessor extends AbstractProcessor {
@@ -93,6 +92,13 @@ public class KotliNamesProcessor extends AbstractProcessor {
                     fields.add((VariableElement) element);
                 }
             }
+            note(classElement.toString());
+
+            if (ProcessorUtil.isImplements(classElement, "io.realm.internal.RealmObjectProxy")) {
+                note("Skip proxy class");
+                continue;
+            }
+
             generateNames(classElement, fields);
             generateRelationshipNames(classElement, fields);
         }
@@ -101,119 +107,120 @@ public class KotliNamesProcessor extends AbstractProcessor {
     }
 
     private void generateNames(Element cls, List<VariableElement> fields) {
-        note(cls.getSimpleName().toString());
-        if (ProcessorUtil.isImplements(cls, RealmObjectProxy.class)) {
-            note("Skip proxy class");
-        } else {
-            String genClassName = cls.getSimpleName().toString() + "Names";
-            String targetFullClassName = cls.asType().toString();
-            String targetSimpleClassName = cls.getSimpleName().toString();
-            String genPackageName = targetFullClassName.substring(0, targetFullClassName.length() - targetSimpleClassName.length() - 1) + ".names";
+        String genClassName = cls.getSimpleName().toString() + "Names";
+        String targetFullClassName = cls.asType().toString();
+        String targetSimpleClassName = cls.getSimpleName().toString();
+        String genPackageName = targetFullClassName.substring(0, targetFullClassName.length() - targetSimpleClassName.length() - 1) + ".names";
 
-            List<MethodSpec> staticMethods = new ArrayList<>();
-            for (VariableElement field : fields) {
-                String fieldName = field.getSimpleName().toString();
-                String typeName = field.asType().toString();
+        List<MethodSpec> staticMethods = new ArrayList<>();
+        for (VariableElement field : fields) {
+            String fieldName = field.getSimpleName().toString();
+            String typeName = field.asType().toString();
 
-                if (field.getAnnotation(Ignore.class) != null) {
-                    note("Ignore " + fieldName);
-                    continue;
-                }
+            if (field.getAnnotation(Ignore.class) != null) {
+                note("Ignore " + fieldName);
+                continue;
+            }
 
+            ClassName type;
+            if (typeName.equals("error.NonExistentClass")) {
+                typeName = cls.getSimpleName().toString() + "RelationshipNames";
+                type = ClassName.get(genPackageName, typeName);
+            } else {
                 if (field.asType().getKind().isPrimitive()) {
                     typeName = PRIMITIVE_TYPE_MAP.get(typeName).getName();
                 }
-
-                note("fieldName : " + fieldName);
-                note("type : " + typeName);
-
-                ClassName type = createTypeClassName(field);
-
-                staticMethods.add(
-                        MethodSpec.methodBuilder(fieldName)
-                                .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
-                                .returns(type)
-                                .addStatement("return new $T($S)", type, fieldName)
-                                .build()
-                );
+                type = createTypeClassName(field);
             }
 
-            TypeSpec typeSpec = TypeSpec.classBuilder(genClassName)
-                    .addModifiers(Modifier.PUBLIC)
-                    .addMethods(staticMethods)
-                    .build();
+            note("fieldName : " + fieldName);
+            note("type : " + typeName);
 
-            JavaFile prefFile = JavaFile.builder(genPackageName, typeSpec)
-                    .build();
-            try {
-                prefFile.writeTo(processingEnv.getFiler());
-            } catch (IOException e) {
-                error(e.getMessage());
-            }
+
+            staticMethods.add(
+                    MethodSpec.methodBuilder(fieldName)
+                            .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
+                            .returns(type)
+                            .addStatement("return new $T($S)", type, fieldName)
+                            .build()
+            );
+        }
+
+        TypeSpec typeSpec = TypeSpec.classBuilder(genClassName)
+                .addModifiers(Modifier.PUBLIC)
+                .addMethods(staticMethods)
+                .build();
+
+        JavaFile prefFile = JavaFile.builder(genPackageName, typeSpec)
+                .build();
+        try {
+            prefFile.writeTo(processingEnv.getFiler());
+        } catch (IOException e) {
+            error(e.getMessage());
         }
     }
 
     private void generateRelationshipNames(Element cls, List<VariableElement> fields) {
-        note(cls.getSimpleName().toString());
-        if (ProcessorUtil.isImplements(cls, RealmObjectProxy.class)) {
-            note("Skip proxy class");
-        } else {
-            String genClassName = cls.getSimpleName().toString() + "RelationshipNames";
-            String targetFullClassName = cls.asType().toString();
-            String targetSimpleClassName = cls.getSimpleName().toString();
-            String genPackageName = targetFullClassName.substring(0, targetFullClassName.length() - targetSimpleClassName.length() - 1) + ".names";
+        String genClassName = cls.getSimpleName().toString() + "RelationshipNames";
+        String targetFullClassName = cls.asType().toString();
+        String targetSimpleClassName = cls.getSimpleName().toString();
+        String genPackageName = targetFullClassName.substring(0, targetFullClassName.length() - targetSimpleClassName.length() - 1) + ".names";
 
-            List<FieldSpec> memberFields = new ArrayList<>();
-            List<MethodSpec> memberMethods = new ArrayList<>();
-            for (VariableElement field : fields) {
-                String fieldName = field.getSimpleName().toString();
-                String typeName = field.asType().toString();
+        List<FieldSpec> memberFields = new ArrayList<>();
+        List<MethodSpec> memberMethods = new ArrayList<>();
+        for (VariableElement field : fields) {
+            String fieldName = field.getSimpleName().toString();
+            String typeName = field.asType().toString();
 
-                if (field.getAnnotation(Ignore.class) != null) {
-                    note("Ignore " + fieldName);
-                    continue;
-                }
+            if (field.getAnnotation(Ignore.class) != null) {
+                note("Ignore " + fieldName);
+                continue;
+            }
 
+            ClassName type;
+            if (typeName.equals("error.NonExistentClass")) {
+                typeName = cls.getSimpleName().toString() + "RelationshipNames";
+                type = ClassName.get(genPackageName, typeName);
+            } else {
                 if (field.asType().getKind().isPrimitive()) {
                     typeName = PRIMITIVE_TYPE_MAP.get(typeName).getName();
                 }
-
-                note("fieldName : " + fieldName);
-                note("type : " + typeName);
-
-                ClassName type = createTypeClassName(field);
-
-                memberMethods.add(
-                        MethodSpec.methodBuilder(fieldName)
-                                .addModifiers(Modifier.PUBLIC)
-                                .returns(type)
-                                .addStatement("return new $T(prefix + $S)", type, fieldName)
-                                .build()
-                );
+                type = createTypeClassName(field);
             }
+
+            note("fieldName : " + fieldName);
+            note("type : " + typeName);
 
             memberMethods.add(
-                    MethodSpec.constructorBuilder()
+                    MethodSpec.methodBuilder(fieldName)
                             .addModifiers(Modifier.PUBLIC)
-                            .addParameter(String.class, "prefix")
-                            .addStatement("this.prefix = prefix + $S", ".")
+                            .returns(type)
+                            .addStatement("return new $T(prefix + $S)", type, fieldName)
                             .build()
             );
-            memberFields.add(FieldSpec.builder(String.class, "prefix", Modifier.PRIVATE, Modifier.FINAL).build());
+        }
 
-            TypeSpec typeSpec = TypeSpec.classBuilder(genClassName)
-                    .addModifiers(Modifier.PUBLIC)
-                    .addFields(memberFields)
-                    .addMethods(memberMethods)
-                    .build();
+        memberMethods.add(
+                MethodSpec.constructorBuilder()
+                        .addModifiers(Modifier.PUBLIC)
+                        .addParameter(String.class, "prefix")
+                        .addStatement("this.prefix = prefix + $S", ".")
+                        .build()
+        );
+        memberFields.add(FieldSpec.builder(String.class, "prefix", Modifier.PRIVATE, Modifier.FINAL).build());
 
-            JavaFile prefFile = JavaFile.builder(genPackageName, typeSpec)
-                    .build();
-            try {
-                prefFile.writeTo(processingEnv.getFiler());
-            } catch (IOException e) {
-                error(e.getMessage());
-            }
+        TypeSpec typeSpec = TypeSpec.classBuilder(genClassName)
+                .addModifiers(Modifier.PUBLIC)
+                .addFields(memberFields)
+                .addMethods(memberMethods)
+                .build();
+
+        JavaFile prefFile = JavaFile.builder(genPackageName, typeSpec)
+                .build();
+        try {
+            prefFile.writeTo(processingEnv.getFiler());
+        } catch (IOException e) {
+            error(e.getMessage());
         }
     }
 
